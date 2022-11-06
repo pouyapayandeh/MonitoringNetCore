@@ -1,0 +1,129 @@
+﻿
+@{
+    Layout = null;
+
+    ViewData["navigationDashboard"] = "";
+
+    switch (ViewBag.activeNavigation)
+    {
+        case "navigationDashboard":
+            ViewData["navigationDashboard"] = "active";
+            ViewData["navigationDashboard_2"] = "navigation-active";
+            break;
+    }
+
+    ViewData["itemHome"] = "";    
+
+    switch (ViewBag.activeItem)
+    {
+        case "itemHome":
+            ViewData["itemHome"] = "active";
+            break;        
+    }
+}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>@ViewData["title"]</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="~/assets/media/image/favicon.png">
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#5867dd">
+
+    <!-- Plugin styles -->
+    <link rel="stylesheet" href="~/vendors/bundle.css" type="text/css">
+    <!-- App styles -->
+    <link rel="stylesheet" href="~/assets/css/app.css" type="text/css">
+</head>
+
+<body>
+    <!-- begin::navigation -->
+    <div class="navigation">
+        <div class="navigation-icon-menu">
+            <ul>
+                <li class="@ViewData["navigationDashboard"]" data-toggle="tooltip" title="پیشخوان">
+                    <a href="#navigationDashboard" title="پیشخوان">
+                        <i class="icon ti-dashboard"></i>
+                    </a>
+                </li>                
+            </ul>
+        </div>
+        <div class="navigation-menu-body">
+            <ul id="navigationDashboard" class="@ViewData["navigationDashboard_2"]">
+                <li class="navigation-divider">پیشخوان</li>
+                <li>
+                    <a id="itemHome" class="@ViewData["itemHome"]" href="/Home/index">خانه</a>
+                </li>
+            </ul>            
+        </div>
+    </div>
+    <!-- end::navigation -->
+    <!-- begin::header -->
+    <div class="header">
+        <!-- begin::header logo -->
+        <div class="header-logo">
+            <a href="/Home/Index">
+                <img class="large-logo" src="~/assets/media/image/logo.png" alt="...">
+                <img class="small-logo" src="~/assets/media/image/logo-sm.png" alt="...">
+                <img class="dark-logo" src="~/assets/media/image/logo-dark.png" alt="...">
+            </a>
+        </div>
+        <!-- end::header logo -->
+        <!-- begin::header body -->
+        <div class="header-body">
+
+            <div class="header-body-left">
+
+                <h3 class="page-title">@ViewBag.title</h3>
+
+                <!-- begin::breadcrumb -->
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">@ViewBag.menuNavigation</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@ViewBag.menuItem</li>
+                    </ol>
+                </nav>
+                <!-- end::breadcrumb -->
+
+            </div>
+
+            <div class="header-body-right">
+                <div class="d-flex align-items-center">
+                    <!-- begin::navbar navigation toggler -->
+                    <div class="d-xl-none d-lg-none d-sm-block navigation-toggler">
+                        <a href="#">
+                            <i class="ti-menu"></i>
+                        </a>
+                    </div>
+                    <!-- end::navbar navigation toggler -->
+                </div>
+            </div>
+        </div>
+        <!-- end::header body -->
+
+    </div>
+    <!-- end::header -->
+    <!-- begin::main content -->
+    <main class="main-content">
+
+        @RenderBody()
+
+    </main>
+    <!-- end::main content -->
+    <!-- Plugin scripts -->
+    <script src="~/vendors/bundle.js"></script>
+
+    <!-- App scripts -->
+    <script src="~/assets/js/app.js"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+
+</html>
