@@ -15,8 +15,6 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
-using Monitoring.Application.Services.Books.Commands.AddBook;
-using Monitoring.Application.Services.Books.Queries.GetBook;
 using Amazon.S3;
 using Microsoft.Data.SqlClient;
 using Monitoring.Common;
@@ -50,26 +48,30 @@ namespace Monitoring.Site
 
             services.Configure<Settings>(options => Configuration.Bind(options));
             services.AddSingleton(settings);
-
-            // System
-            services.AddScoped<IDataBaseContext, DataBaseContext>();
-
-            // Plate
-            services.AddScoped<IGetBookService, GetBookService>();
-            services.AddScoped<IAddBookService, AddBookService>();
+                
             
+            // // System
+            // services.AddScoped<IDataBaseContext, DataBaseContext>();
+            //
+            // // Plate
+            // services.AddScoped<IGetBookService, GetBookService>();
+            // services.AddScoped<IAddBookService, AddBookService>();
+            //
 
             var appSetting = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json",optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables().Build();
-
-
+            
+            
             string connectionString = appSetting["ConnectionStrings:PostgresConnection"];
-            Console.WriteLine(connectionString);
             services.AddEntityFrameworkSqlServer().AddDbContext<DataBaseContext>(
                 options => options.UseNpgsql(connectionString));
+            
 
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddEntityFrameworkStores<DataBaseContext>();
+            
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.

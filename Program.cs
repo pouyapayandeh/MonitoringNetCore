@@ -19,7 +19,7 @@ namespace Monitoring.Site
             
             using (var scope = host.Services.CreateScope())
             {
-                var db = scope.ServiceProvider.GetRequiredService<IDataBaseContext>();
+                var db = scope.ServiceProvider.GetRequiredService<DataBaseContext>();
                 db.Migrate();
             }
             

@@ -1,58 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Monitoring.Application.Services.Books.Commands.AddBook;
-using Monitoring.Application.Services.Books.Queries.GetBook;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Amazon.S3;
+using Amazon.S3.Model;
 using Microsoft.AspNetCore.Mvc;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
+namespace MonitoringNetCore.Controllers;
 
-namespace Monitoring.Site.Controllers
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    // GET
+    public IActionResult Index(int pageNumber = 1, int pageSize = 10)
     {
-        private readonly IGetBookService _getBookService;
-        private readonly IAddBookService _addBookService;
+        ViewBag.title = "خانه";
+        ViewBag.menuNavigation = "پیشخوان";
+        ViewBag.menuItem = "خانه";
+        ViewBag.activeNavigation = "navigationDashboard";
+        ViewBag.activeItem = "itemHome";
 
-        public HomeController(IGetBookService getBookService, IAddBookService addBookService)
-        {
-            _getBookService = getBookService;
-            _addBookService = addBookService;
-        }
+        // var result = _getBookService.Execute(new RequestGetBookDto
+        // {
+        //     PageNumber = pageNumber,
+        //     PageSize = pageSize,
+        // });
 
-        public IActionResult Index(int pageNumber = 1, int pageSize = 10)
-        {
-            ViewBag.title = "خانه";
-            ViewBag.menuNavigation = "پیشخوان";
-            ViewBag.menuItem = "خانه";
-            ViewBag.activeNavigation = "navigationDashboard";
-            ViewBag.activeItem = "itemHome";
-
-            var result = _getBookService.Execute(new RequestGetBookDto
-            {
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-            });
-
-            return View(result);
-        }
-
-        [HttpPost]
-        public IActionResult AddBook(string Name, int Number)
-        {
-            var signupResult = _addBookService.Execute(new RequestAddBookDto
-            {
-                Name = Name,
-                Number = Number,
-            });           
-
-            return Json(signupResult);
-        }
+        return View();
     }
 }

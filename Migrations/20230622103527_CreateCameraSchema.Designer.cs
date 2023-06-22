@@ -11,8 +11,8 @@ using Monitoring.Presistence.Contexts;
 namespace MonitoringNetCore.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20221110162835_CreateVideoSchema")]
-    partial class CreateVideoSchema
+    [Migration("20230622103527_CreateCameraSchema")]
+    partial class CreateCameraSchema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -56,6 +56,28 @@ namespace MonitoringNetCore.Migrations
 
                     b.ToTable("VideoFile");
                 });
+
+            modelBuilder.Entity("Monitoring.Site.Domain.Entities.Camera", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("INTEGER");
+
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasColumnType("TEXT");
+
+                b.Property<DateTime>("InsertedAt")
+                    .HasColumnType("TEXT");
+
+                b.Property<int>("Type")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("INTEGER");
+
+                b.HasKey("Id");
+
+                b.ToTable("Camera");
+            });
 #pragma warning restore 612, 618
         }
     }

@@ -4,29 +4,31 @@
 
 namespace MonitoringNetCore.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class CreateCameraSchema : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Books",
+                name: "Camera",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
-                    Number = table.Column<int>(type: "INTEGER", maxLength: 20, nullable: false)
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    InsertedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Type = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Books", x => x.Id);
+                    table.PrimaryKey("PK_VideoFile", x => x.Id);
                 });
+
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Books");
+                name: "Camera");
         }
     }
 }
