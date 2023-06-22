@@ -18,6 +18,8 @@ using Amazon.Runtime.CredentialManagement;
 using Monitoring.Application.Services.Books.Commands.AddBook;
 using Monitoring.Application.Services.Books.Queries.GetBook;
 using Amazon.S3;
+using Monitoring.Common;
+
 namespace Monitoring.Site
 {
     public class Startup
@@ -33,7 +35,23 @@ namespace Monitoring.Site
         public void ConfigureServices(IServiceCollection services)
         {
 
-            // System
+            // Settings
+            var builder = new ConfigurationBuilder()
+                .AddEnvironmentVariables();
+            var configuration = builder.Build();
+
+            var settings = new Settings
+            {
+                AWSEndpoint = Environment.GetEnvironmentVariable("AWS_ENDPOINT") ?? "http://127.0.0.1:9000/",
+                AWSAccessKeyId = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID") ?? "EkDiyryHuatO2kRS",
+                AWSSecretAccessKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY_ID") ?? "13Qcg4oiPxRL4LyVhpnxQx992UmoiRJ6"
+            };
+
+            services.Configure<Settings>(options => Configuration.Bind(options));
+            services.AddSingleton(settings);
+            services.Configure<Settings>(settings =>
+
+                // System
             services.AddScoped<IDataBaseContext, DataBaseContext>();
 
             // Plate
@@ -63,10 +81,10 @@ namespace Monitoring.Site
                 .AddScoped<IAmazonS3>(p => {
                     var config = new AmazonS3Config
                     {
-                        ServiceURL = "http://127.0.0.1:9000/",
+                        ServiceURL = settings.AWSEndpoint,
                         ForcePathStyle = true
                     };
-                    return new AmazonS3Client("EkDiyryHuatO2kRS", "13Qcg4oiPxRL4LyVhpnxQx992UmoiRJ6", config);
+                    return new AmazonS3Client(settings.AWSAccessKeyId, settings.AWSSecretAccessKey, config);
                 });
         }
 
