@@ -1,0 +1,27 @@
+@model List<Amazon.S3.Model.S3Object> 
+
+@{
+    ViewData["Title"] = "Index";
+}
+@{
+    Layout = "~/Views/Shared/_BookLayout.cshtml";
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        لیست ویدئو ها
+    </div>
+    <br/>
+    <div class="container">
+        <div class="row row-cols-3">
+
+            @foreach (var item in Model)
+            {
+                <div class="col">
+                    <p> @item.Key </p>
+                    <img src="http://localhost:9000/uploads/@item.Key" class="img-thumbnail" ></img>
+                </div>
+            }
+        </div>
+    </div>
+</div>
