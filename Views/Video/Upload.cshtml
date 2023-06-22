@@ -1,0 +1,34 @@
+@model MonitoringNetCore.Controllers.UploadedVideo
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>VideoFile</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Upload" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <dl>
+                <dt>
+                    <label asp-for="FormFile"></label>
+                </dt>
+                <dd>
+                    <input asp-for="FormFile" type="file">
+                    <span asp-validation-for="FormFile"></span>
+                </dd>
+            </dl>
+            <div class="form-group">
+                <input type="submit" value="Upload" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

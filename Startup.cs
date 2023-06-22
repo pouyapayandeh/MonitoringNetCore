@@ -13,9 +13,11 @@ using Monitoring.Presistence.Contexts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Amazon.Runtime;
+using Amazon.Runtime.CredentialManagement;
 using Monitoring.Application.Services.Books.Commands.AddBook;
 using Monitoring.Application.Services.Books.Queries.GetBook;
-
+using Amazon.S3;
 namespace Monitoring.Site
 {
     public class Startup
@@ -41,7 +43,9 @@ namespace Monitoring.Site
 
             var appSetting = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json").Build();
+                .AddJsonFile("appsettings.json",optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables().Build();
+            
 
             string connectionString = appSetting["ConnectionStrings:DefaultConnection"];
             services.AddEntityFrameworkSqlServer().AddDbContext<DataBaseContext>(
@@ -55,6 +59,15 @@ namespace Monitoring.Site
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+            services
+                .AddScoped<IAmazonS3>(p => {
+                    var config = new AmazonS3Config
+                    {
+                        ServiceURL = "http://127.0.0.1:9000/",
+                        ForcePathStyle = true
+                    };
+                    return new AmazonS3Client("EkDiyryHuatO2kRS", "13Qcg4oiPxRL4LyVhpnxQx992UmoiRJ6", config);
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

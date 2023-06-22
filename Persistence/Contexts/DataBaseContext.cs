@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +6,7 @@ using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using Monitoring.Domain.Entities.Books;
+using Monitoring.Site.Domain.Entities;
 
 namespace Monitoring.Presistence.Contexts
 {
@@ -22,5 +23,7 @@ namespace Monitoring.Presistence.Contexts
         { 
             
         }
+
+        public DbSet<Monitoring.Site.Domain.Entities.VideoFile> VideoFile { get; set; }
     }
 }
