@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace MonitoringNetCore.Controllers
         // public string ImageDescription { set;get; }
         public IFormFile FormFile { set; get; }
     }
+    [Authorize]
     public class VideoController : Controller
     {
         private readonly DataBaseContext _context;

@@ -7,21 +7,23 @@ using Microsoft.Extensions.Configuration;
 using System.IO;
 using Monitoring.Domain.Entities.Books;
 using Monitoring.Site.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Monitoring.Presistence.Contexts
 {
-    public class DataBaseContext:DbContext, IDataBaseContext
+    public class DataBaseContext:IdentityDbContext<IdentityUser>
     {
         public DataBaseContext(DbContextOptions options) : base(options)
         {
-
+        
         }
-
-        public DbSet<Book> Books { get; set; } 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         { 
-            
+            base.OnModelCreating(modelBuilder);
+            // modelBuilder.Entity<IdentityUser>().HasKey(iul => iul.Id);
+            // modelBuilder.Entity<IdentityUserLogin<>>().HasKey(iul => iul.Id);
         }
 
         public DbSet<Monitoring.Site.Domain.Entities.VideoFile> VideoFile { get; set; }

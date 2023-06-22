@@ -15,8 +15,6 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
-using Monitoring.Application.Services.Books.Commands.AddBook;
-using Monitoring.Application.Services.Books.Queries.GetBook;
 using Amazon.S3;
 namespace Monitoring.Site
 {
@@ -33,13 +31,13 @@ namespace Monitoring.Site
         public void ConfigureServices(IServiceCollection services)
         {
 
-            // System
-            services.AddScoped<IDataBaseContext, DataBaseContext>();
-
-            // Plate
-            services.AddScoped<IGetBookService, GetBookService>();
-            services.AddScoped<IAddBookService, AddBookService>();
-            
+            // // System
+            // services.AddScoped<IDataBaseContext, DataBaseContext>();
+            //
+            // // Plate
+            // services.AddScoped<IGetBookService, GetBookService>();
+            // services.AddScoped<IAddBookService, AddBookService>();
+            //
 
             var appSetting = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -48,8 +46,15 @@ namespace Monitoring.Site
             
 
             string connectionString = appSetting["ConnectionStrings:DefaultConnection"];
-            services.AddEntityFrameworkSqlServer().AddDbContext<DataBaseContext>(
-                options => options.UseSqlite(@"DataSource=mydatabase.db;"));
+            // services.AddEntityFrameworkSqlServer().AddDbContext<DataBaseContext>(
+            //     options => options.UseSqlite(@"DataSource=mydatabase.db;"));
+            
+            services.AddDbContext<DataBaseContext>(options =>
+                options.UseSqlite(@"DataSource=mydatabase.db;"));
+
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddEntityFrameworkStores<DataBaseContext>();
+            
 
             services.Configure<CookiePolicyOptions>(options =>
             {
