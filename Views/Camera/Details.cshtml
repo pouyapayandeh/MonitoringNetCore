@@ -1,0 +1,41 @@
+@model Monitoring.Site.Domain.Entities.Camera
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>VideoFile</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.InsertedAt)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.InsertedAt)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Type)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Type)
+        </dd>
+    </dl>
+</div>
+<div>salam</div>
+<video width="320" height="240" controls>
+    <source type="video/mp4" src="@Html.DisplayFor(model => model.Url)">
+    Your browser does not support the video tag.
+</video>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
