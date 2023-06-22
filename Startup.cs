@@ -49,7 +49,6 @@ namespace Monitoring.Site
 
             services.Configure<Settings>(options => Configuration.Bind(options));
             services.AddSingleton(settings);
-            services.Configure<Settings>(settings =>
 
                 // System
             services.AddScoped<IDataBaseContext, DataBaseContext>();
