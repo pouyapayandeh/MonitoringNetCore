@@ -1,8 +1,8 @@
 ﻿@addTagHelper *, LazZiya.TagHelpers
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@using Monitoring.Application.Services.Books.Queries.GetBook;
+@* @using Monitoring.Application.Services.Books.Queries.GetBook; *@
 @using Monitoring.Common.Dto;
-@model ResultDto<ResultGetBookDto>;
+@* @model ResultDto<ResultGetBookDto>; *@
 @{
     Layout = "~/Views/Shared/_BookLayout.cshtml";
     int pageNumber = 1;
@@ -28,33 +28,34 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @{
-                            if (Model.IsSuccess)
-                            {
-                                int counter = ((pageNumber == 0 ? 1 : pageNumber) - 1) * pageSize + 1;
-                                foreach (var item in Model.Data.Books)
-                                {
-                                    <tr>
-                                        <th scope="row">@counter</th>
-                                        @{
-                                            counter++;
-                                        }
-                                        <td>@item.Name</td>
-                                        <td>@item.Number</td>                                     
-                                    </tr>
-                                }
-                            }
-                            else
-                            {
-
-                            }
-                        }
+                        @* @{ *@
+                        @*     if (Model.IsSuccess) *@
+                        @*     { *@
+                        @*         int counter = ((pageNumber == 0 ? 1 : pageNumber) - 1) * pageSize + 1; *@
+                        @*         foreach (var item in Model.Data.Books) *@
+                        @*         { *@
+                        @*             <tr> *@
+                        @*                 <th scope="row">@counter</th> *@
+                        @*                 @{ *@
+                        @*                     counter++; *@
+                        @*                 } *@
+                        @*                 <td>@item.Name</td> *@
+                        @*                 <td>@item.Number</td> *@
+                        @*             </tr> *@
+                        @*         } *@
+                        @*     } *@
+                        @*     else *@
+                        @*     { *@
+                        @* *@
+                        @*     } *@
+                        @* } *@
                     </tbody>
                 </table>
-                <paging total-records="@Model.Data.Rows"
-                        page-no="@pageNumber == 0 ? 1 : pageNumber"
-                        page-size="@pageSize == 0 ? 10 : pageSize"
-                        show-prev-next="true"
+                @* total-records="@Model.Data.Rows" *@
+                @*         page-no="@pageNumber == 0 ? 1 : pageNumber" *@
+                @*         page-size="@pageSize == 0 ? 10 : pageSize" *@
+                <paging 
+                show-prev-next="true"
                         show-total-pages="false"
                         show-total-records="false"
                         show-page-size-nav="true"
