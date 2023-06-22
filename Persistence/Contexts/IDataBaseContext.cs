@@ -14,6 +14,8 @@ namespace Monitoring.Presistence.Contexts
 
         int SaveChanges(bool acceptAllChangesOnSuccess);
         int SaveChanges();
+        void Migrate();
+
         Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken());
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken());
     }

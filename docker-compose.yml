@@ -10,22 +10,25 @@ services:
       - "5273:5273"
     depends_on:
       - minio
-      - db
+      - postgres
       - video_processor
     environment:
-      DATABASE_URL: "postgres://user:password@db:5432/dbname"
-      AWS_ENDPOINT: "minio:9000"
+      DATABASE_HOST: "postgres"
+      DATABASE_USER: "user"
+      DATABASE_PASSWORD: "password"
+      DATABASE_NAME: "monitoring"
+      AWS_ENDPOINT: "http://minio:9000"
       AWS_ACCESS_KEY_ID: minioaccesskey
       AWS_SECRET_ACCESS_KEY_ID: miniosecretkey
       VIDEO_PROCESSOR_SERVICE_URL: "http://video_processor:8000"
-      ASPNETCORE_URLS: "http://localhost:5273"
+      ASPNETCORE_URLS: "http://*:5273"
 
-  db:
+  postgres:
     image: postgres
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: dbname
+      POSTGRES_DB: monitoring
     volumes:
       - db_data:/var/lib/postgresql/data
 
@@ -39,6 +42,18 @@ services:
       MINIO_SECRET_KEY: miniosecretkey
     ports:
       - "9000:9000"
+    
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 minioaccesskey miniosecretkey;
+      /usr/bin/mc mb myminio/uploads;
+      /usr/bin/mc policy set public myminio/uploadsx;
+      exit 0;
+      "
 
   video_processor:
     build:

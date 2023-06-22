@@ -71,6 +71,7 @@ namespace MonitoringNetCore.Controllers
         {
             if (ModelState.IsValid)
             {
+                videoFile.UploadDate = DateTime.SpecifyKind(videoFile.UploadDate, DateTimeKind.Utc);
                 _context.Add(videoFile);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -100,6 +101,7 @@ namespace MonitoringNetCore.Controllers
                 {
                     videoFile.FormFile.CopyTo(newMemoryStream);
 
+                    
                     var uploadRequest = new TransferUtilityUploadRequest
                     {
                         InputStream = newMemoryStream,
@@ -117,7 +119,7 @@ namespace MonitoringNetCore.Controllers
                 var video = new VideoFile
                 {
                     Path = filePath,
-                    UploadDate = DateTime.Now
+                    UploadDate = DateTime.UtcNow
                 };
                 _context.Add(video);
                 await _context.SaveChangesAsync();

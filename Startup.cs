@@ -18,6 +18,7 @@ using Amazon.Runtime.CredentialManagement;
 using Monitoring.Application.Services.Books.Commands.AddBook;
 using Monitoring.Application.Services.Books.Queries.GetBook;
 using Amazon.S3;
+using Microsoft.Data.SqlClient;
 using Monitoring.Common;
 
 namespace Monitoring.Site
@@ -50,7 +51,7 @@ namespace Monitoring.Site
             services.Configure<Settings>(options => Configuration.Bind(options));
             services.AddSingleton(settings);
 
-                // System
+            // System
             services.AddScoped<IDataBaseContext, DataBaseContext>();
 
             // Plate
@@ -62,11 +63,12 @@ namespace Monitoring.Site
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json",optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables().Build();
-            
 
-            string connectionString = appSetting["ConnectionStrings:DefaultConnection"];
+
+            string connectionString = appSetting["ConnectionStrings:PostgresConnection"];
+            Console.WriteLine(connectionString);
             services.AddEntityFrameworkSqlServer().AddDbContext<DataBaseContext>(
-                options => options.UseSqlite(@"DataSource=mydatabase.db;"));
+                options => options.UseNpgsql(connectionString));
 
             services.Configure<CookiePolicyOptions>(options =>
             {

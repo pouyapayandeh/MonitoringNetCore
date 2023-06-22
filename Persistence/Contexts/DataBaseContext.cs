@@ -25,5 +25,11 @@ namespace Monitoring.Presistence.Contexts
         }
 
         public DbSet<Monitoring.Site.Domain.Entities.VideoFile> VideoFile { get; set; }
+
+        public void Migrate()
+        {
+            Console.WriteLine(Database.ProviderName);
+            this.Database.Migrate();
+        }
     }
 }
