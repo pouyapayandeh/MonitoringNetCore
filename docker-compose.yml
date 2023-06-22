@@ -1,0 +1,53 @@
+﻿version: '3'
+
+services:
+  monitoringnetcore:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "7009:7009"
+      - "5273:5273"
+    depends_on:
+      - minio
+      - db
+      - video_processor
+    environment:
+      DATABASE_URL: "postgres://user:password@db:5432/dbname"
+      AWS_ENDPOINT: "minio:9000"
+      AWS_ACCESS_KEY_ID: minioaccesskey
+      AWS_SECRET_ACCESS_KEY_ID: miniosecretkey
+      VIDEO_PROCESSOR_SERVICE_URL: "http://video_processor:8000"
+      ASPNETCORE_URLS: "http://localhost:5273"
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dbname
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  minio:
+    image: minio/minio
+    command: server /data
+    volumes:
+      - minio_data:/data
+    environment:
+      MINIO_ACCESS_KEY: minioaccesskey
+      MINIO_SECRET_KEY: miniosecretkey
+    ports:
+      - "9000:9000"
+
+  video_processor:
+    build:
+      context: ./video_processor  # path to your Python Dockerfile
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+
+volumes:
+  db_data: {}
+  minio_data: {}
+
