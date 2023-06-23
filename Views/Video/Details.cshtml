@@ -1,30 +1,31 @@
-@model Monitoring.Site.Domain.Entities.VideoFile
+﻿@model Monitoring.Site.Domain.Entities.VideoFile
 
 @{
-    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_BookLayout.cshtml";
 }
 
-<h1>Details</h1>
-
-<div>
-    <h4>VideoFile</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Path)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Path)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UploadDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UploadDate)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="row row-cols-1 row-cols-md-6 g-4">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>شناسه</th>
+                            <th>تاریخ</th>
+                            <th>مسیر</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#</td>
+                            <td>@Model.UploadDate</td>
+                            <td>@Model.Path</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <a asp-aciton="Index" href="/Video" class="btn btn-outline-primary">بازگشت به لیست</a>
+            </div>
+        </div>
+    </div>
 </div>

@@ -68,7 +68,7 @@ namespace Monitoring.Site
                 .AddScoped<IAmazonS3>(p => {
                     var config = new AmazonS3Config
                     {
-                        ServiceURL = "http://127.0.0.1:9000/",
+                        ServiceURL = "http://172.30.21.175:9000/",
                         ForcePathStyle = true
                     };
                     return new AmazonS3Client("EkDiyryHuatO2kRS", "13Qcg4oiPxRL4LyVhpnxQx992UmoiRJ6", config);

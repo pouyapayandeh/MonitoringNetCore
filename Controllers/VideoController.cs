@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,12 +37,23 @@ namespace MonitoringNetCore.Controllers
         // GET: Video
         public async Task<IActionResult> Index()
         {
+            ViewBag.title = "ویدئوها";
+            ViewBag.menuNavigation = "پیشخوان";
+            ViewBag.menuItem = "ویدئوها";
+            ViewBag.activeNavigation = "navigationDashboard";
+            ViewBag.activeItem = "itemVideos";
+
             return View(await _context.VideoFile.ToListAsync());
         }
 
         // GET: Video/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            ViewBag.title = "حزئیات فیلم";
+            ViewBag.menuNavigation = "پیشخوان";
+            ViewBag.menuItem = "جزئیات فیلم";
+            ViewBag.activeNavigation = "navigationDashboard";
+
             if (id == null)
             {
                 return NotFound();
@@ -61,6 +72,11 @@ namespace MonitoringNetCore.Controllers
         // GET: Video/Create
         public IActionResult Create()
         {
+            ViewBag.title = "ایجاد ویدئوی جدید";
+            ViewBag.menuNavigation = "پیشخوان";
+            ViewBag.menuItem = "ایجاد ویدئوی جدید";
+            ViewBag.activeNavigation = "navigationDashboard";
+
             return View();
         }
 
@@ -71,6 +87,11 @@ namespace MonitoringNetCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Path,UploadDate")] VideoFile videoFile)
         {
+            ViewBag.title = "ایجاد ویدئوی جدید";
+            ViewBag.menuNavigation = "پیشخوان";
+            ViewBag.menuItem = "ایجاد ویدئوی جدید";
+            ViewBag.activeNavigation = "navigationDashboard";
+
             if (ModelState.IsValid)
             {
                 _context.Add(videoFile);
@@ -81,6 +102,11 @@ namespace MonitoringNetCore.Controllers
         }
         public IActionResult Upload()
         {
+            ViewBag.title = "بارگذاری ویدئوی جدید";
+            ViewBag.menuNavigation = "پیشخوان";
+            ViewBag.menuItem = "بارگذاری ویدئوی جدید";
+            ViewBag.activeNavigation = "navigationDashboard";
+
             return View();
         }
 
@@ -91,6 +117,12 @@ namespace MonitoringNetCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Upload(UploadedVideo videoFile)
         {
+
+            ViewBag.title = "بارگذاری ویدئوی جدید";
+            ViewBag.menuNavigation = "پیشخوان";
+            ViewBag.menuItem = "بارگذاری ویدئوی جدید";
+            ViewBag.activeNavigation = "navigationDashboard";
+
             if (videoFile.FormFile != null)
             {
                 var uniqueFileName = videoFile.FormFile .FileName;
