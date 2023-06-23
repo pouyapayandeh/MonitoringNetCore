@@ -18,7 +18,10 @@
     {
         case "itemHome":
             ViewData["itemHome"] = "active";
-            break;        
+            break;
+        case "itemVideos":
+            ViewData["itemVideos"] = "active";
+            break;
     }
 }
 
@@ -60,6 +63,9 @@
                 <li class="navigation-divider">پیشخوان</li>
                 <li>
                     <a id="itemHome" class="@ViewData["itemHome"]" href="/Home/index">خانه</a>
+                </li>
+                <li>
+                    <a id="itemVideos" class="@ViewData["itemVideos"]" href="/VIdeo">ویدئوها</a>
                 </li>
             </ul>            
         </div>

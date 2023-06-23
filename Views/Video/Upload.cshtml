@@ -1,34 +1,23 @@
-@model MonitoringNetCore.Controllers.UploadedVideo
+﻿@model MonitoringNetCore.Controllers.UploadedVideo
 
 @{
-    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_BookLayout.cshtml";
 }
 
-<h1>Create</h1>
 
-<h4>VideoFile</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Upload" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <dl>
-                <dt>
-                    <label asp-for="FormFile"></label>
-                </dt>
-                <dd>
-                    <input asp-for="FormFile" type="file">
-                    <span asp-validation-for="FormFile"></span>
-                </dd>
-            </dl>
-            <div class="form-group">
-                <input type="submit" value="Upload" class="btn btn-primary" />
+<div class="row row-cols-1 g-4">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                <form asp-aciton="Upload" method="post" enctype="multipart/form-data">
+                    <label asp-for="FormFile" for="formFileMultiple" class="form-label">فایل خود را انتخاب کنید:</label>
+                    <input asp-for="FormFile" class="form-control" type="file" id="formFileMultiple">
+                    <div asp-validation-for="FormFile" class="invalid-feedback">
+                    </div>
+                    <p asp-validation-summary="ModelOnly" class="text-danger"></p>
+                    <button type="submit" class="mb-4 btn btn-primary">بارگذاری فیلم</button>
+                </form>
+                </div>
             </div>
-        </form>
-    </div>
+        </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-

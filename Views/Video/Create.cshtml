@@ -1,35 +1,36 @@
-@model Monitoring.Site.Domain.Entities.VideoFile
+﻿@model Monitoring.Site.Domain.Entities.VideoFile
 
 @{
-    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_BookLayout.cshtml";
 }
 
-<h1>Create</h1>
+<div class="row row-cols-1 g-4">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <form asp-aciton="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-<h4>VideoFile</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Path" class="control-label"></label>
-                <input asp-for="Path" class="form-control" />
-                <span asp-validation-for="Path" class="text-danger"></span>
+                    <div class="input-group mb-3">
+                        <label asp-for="Path" class="input-group-text">آدرس فایل:</label>
+                        <input 
+                            asp-for="Path"
+                            class="form-control" 
+                        >
+                        <div class="invalid-feedback" asp-validation-for="Path"></div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <label asp-for="UploadDate" class="input-group-text">تاریخ:</label>
+                        <input asp-for="UploadDate"
+                               class="form-control">
+                        <div class="invalid-feedback" asp-validation-for="UploadDate"></div>
+                    </div>
+
+                    <button type="submit" value="Create" class="btn btn-primary">ثبت فیلم</button>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="UploadDate" class="control-label"></label>
-                <input asp-for="UploadDate" class="form-control" />
-                <span asp-validation-for="UploadDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
