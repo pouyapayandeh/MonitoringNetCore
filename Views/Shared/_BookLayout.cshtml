@@ -1,4 +1,6 @@
-﻿
+﻿@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
 @{
     Layout = null;
 
@@ -12,7 +14,7 @@
             break;
     }
 
-    ViewData["itemHome"] = "";    
+    ViewData["itemHome"] = "";
 
     switch (ViewBag.activeItem)
     {
@@ -21,6 +23,12 @@
             break;
         case "itemVideos":
             ViewData["itemVideos"] = "active";
+            break;
+        case "itemUsers":
+            ViewData["itemUsers"] = "active";
+            break;
+        case "itemCameras":
+            ViewData["itemCameras"] = "active";
             break;
     }
 }
@@ -47,89 +55,120 @@
 </head>
 
 <body>
-    <!-- begin::navigation -->
-    <div class="navigation">
-        <div class="navigation-icon-menu">
-            <ul>
-                <li class="@ViewData["navigationDashboard"]" data-toggle="tooltip" title="پیشخوان">
-                    <a href="#navigationDashboard" title="پیشخوان">
-                        <i class="icon ti-dashboard"></i>
-                    </a>
-                </li>                
+<!-- begin::navigation -->
+<div class="navigation">
+    <div class="navigation-icon-menu">
+        <ul>
+            <li class="@ViewData["navigationDashboard"]" data-toggle="tooltip" title="پیشخوان">
+                <a href="#navigationDashboard" title="پیشخوان">
+                    <i class="icon ti-dashboard"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="navigation-menu-body">
+        <ul id="navigationDashboard" class="@ViewData["navigationDashboard_2"]">
+            <li class="navigation-divider">پیشخوان</li>
+            <li>
+                <a id="itemHome" class="@ViewData["itemHome"]" href="/Home/index">خانه</a>
+            </li>
+            <li>
+                <a id="itemVideos" class="@ViewData["itemVideos"]" href="/Video">ویدئوها</a>
+            </li>
+            <li>
+                <a id="itemCameras" class="@ViewData["itemCameras"]" href="/Camera">دوربین ها</a>
+            </li>
+            <li>
+                <a id="itemUsers" class="@ViewData["itemUsers"]" href="/User">کاربران</a>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- end::navigation -->
+<!-- begin::header -->
+<div class="header">
+    <!-- begin::header logo -->
+    <div class="header-logo">
+        <a href="/Home/Index">
+            <img class="large-logo" src="~/assets/media/image/logo.png" alt="...">
+            <img class="small-logo" src="~/assets/media/image/logo-sm.png" alt="...">
+            <img class="dark-logo" src="~/assets/media/image/logo-dark.png" alt="...">
+        </a>
+    </div>
+    <!-- end::header logo -->
+    <!-- begin::header body -->
+    <div class="header-body">
+
+        <div class="header-body-left">
+
+            <h3 class="page-title">@ViewBag.title</h3>
+
+            <!-- begin::breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="#">@ViewBag.menuNavigation</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">@ViewBag.menuItem</li>
+                </ol>
+            </nav>
+            <!-- end::breadcrumb -->
+
+        </div>
+
+        <div class="header-body-right ">
+            <ul class="navbar-nav">
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <li class="nav-item">
+                        سلام @UserManager.GetUserName(User)!
+                        @* <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage"></a> *@
+                    </li>
+                    <li class="nav-item">
+                        <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                            <button id="logout" type="submit" class="nav-link btn btn-outline-danger text-dark">خروج</button>
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    @* <li class="nav-item"> *@
+                    @*     <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a> *@
+                    @* </li> *@
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">ورود</a>
+                    </li>
+                }
             </ul>
-        </div>
-        <div class="navigation-menu-body">
-            <ul id="navigationDashboard" class="@ViewData["navigationDashboard_2"]">
-                <li class="navigation-divider">پیشخوان</li>
-                <li>
-                    <a id="itemHome" class="@ViewData["itemHome"]" href="/Home/index">خانه</a>
-                </li>
-                <li>
-                    <a id="itemVideos" class="@ViewData["itemVideos"]" href="/VIdeo">ویدئوها</a>
-                </li>
-            </ul>            
-        </div>
-    </div>
-    <!-- end::navigation -->
-    <!-- begin::header -->
-    <div class="header">
-        <!-- begin::header logo -->
-        <div class="header-logo">
-            <a href="/Home/Index">
-                <img class="large-logo" src="~/assets/media/image/logo.png" alt="...">
-                <img class="small-logo" src="~/assets/media/image/logo-sm.png" alt="...">
-                <img class="dark-logo" src="~/assets/media/image/logo-dark.png" alt="...">
-            </a>
-        </div>
-        <!-- end::header logo -->
-        <!-- begin::header body -->
-        <div class="header-body">
-
-            <div class="header-body-left">
-
-                <h3 class="page-title">@ViewBag.title</h3>
-
-                <!-- begin::breadcrumb -->
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">@ViewBag.menuNavigation</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">@ViewBag.menuItem</li>
-                    </ol>
-                </nav>
-                <!-- end::breadcrumb -->
-
-            </div>
-
-            <div class="header-body-right">
-                <div class="d-flex align-items-center">
-                    <!-- begin::navbar navigation toggler -->
-                    <div class="d-xl-none d-lg-none d-sm-block navigation-toggler">
-                        <a href="#">
-                            <i class="ti-menu"></i>
-                        </a>
-                    </div>
-                    <!-- end::navbar navigation toggler -->
+            <div class="d-flex align-items-center">
+                <!-- begin::navbar navigation toggler -->
+                <div class="d-xl-none d-lg-none d-sm-block navigation-toggler">
+                    <a href="#">
+                        <i class="ti-menu"></i>
+                    </a>
                 </div>
+                <!-- end::navbar navigation toggler -->
             </div>
         </div>
-        <!-- end::header body -->
-
     </div>
-    <!-- end::header -->
-    <!-- begin::main content -->
-    <main class="main-content">
+    <!-- end::header body -->
 
-        @RenderBody()
+</div>
+<!-- end::header -->
+<!-- begin::main content -->
+<main class="main-content">
 
-    </main>
-    <!-- end::main content -->
-    <!-- Plugin scripts -->
-    <script src="~/vendors/bundle.js"></script>
+    @RenderBody()
 
-    <!-- App scripts -->
-    <script src="~/assets/js/app.js"></script>
+</main>
+<!-- end::main content -->
+<!-- Plugin scripts -->
+<script src="~/vendors/bundle.js"></script>
 
-    @RenderSection("Scripts", required: false)
+<!-- App scripts -->
+<script src="~/assets/js/app.js"></script>
+
+@RenderSection("Scripts", required: false)
 </body>
 
 </html>

@@ -52,7 +52,16 @@ namespace Monitoring.Site
             services.AddDbContext<DataBaseContext>(options =>
                 options.UseSqlite(@"DataSource=mydatabase.db;"));
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+            services.AddDefaultIdentity<IdentityUser>(options =>
+                {
+                    options.SignIn.RequireConfirmedAccount = false;
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequiredLength = 1;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireUppercase = false;
+
+                })
                 .AddEntityFrameworkStores<DataBaseContext>();
             
 

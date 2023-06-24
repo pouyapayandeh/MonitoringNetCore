@@ -1,74 +1,71 @@
-﻿@* @addTagHelper *, LazZiya.TagHelpers *@
-@* @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers *@
-@* @using Monitoring.Application.Services.Books.Queries.GetBook; *@
-@* @using Monitoring.Common.Dto; *@
-@* @model ResultDto<ResultGetBookDto>; *@
-@* @{ *@
-@*     Layout = "~/Views/Shared/_BookLayout.cshtml"; *@
-@*     int pageNumber = 1; *@
-@*     int pageSize = 10; *@
-@*     int.TryParse(Context.Request.Query["pageNumber"], out pageNumber); *@
-@*     int.TryParse(Context.Request.Query["pageSize"], out pageSize); *@
-@* } *@
-@* *@
-@* <div class="card"> *@
-@*     <div class="card-header d-flex justify-content-between"> *@
-@*         لیست کاربران *@
-@*     </div> *@
-@*     <br /> *@
-@*     <div class="card"> *@
-@*         <div class="card-body"> *@
-@*             <div class="table-responsive"> *@
-@*                 <table class="table" id="usersList"> *@
-@*                     <thead> *@
-@*                         <tr> *@
-@*                             <th scope="col">ردیف</th> *@
-@*                             <th scope="col">نام کاربر</th> *@
-@*                             <th scope="col">شناسه کاربر</th> *@
-@*                         </tr> *@
-@*                     </thead> *@
-@*                     <tbody> *@
-@*                         @{ *@
-@*                             if (Model.IsSuccess) *@
-@*                             { *@
-@*                                 int counter = ((pageNumber == 0 ? 1 : pageNumber) - 1) * pageSize + 1; *@
-@*                                 foreach (var item in Model.Data.Books) *@
-@*                                 { *@
-@*                                             <tr> *@
-@*                                                 <th scope="row">@counter</th> *@
-@*                                                 @{ *@
-@*                                             counter++; *@
-@*                                                 } *@
-@*                                                 <td>@item.Name</td> *@
-@*                                                 <td>@item.Number</td>                                      *@
-@*                                             </tr> *@
-@*                                 } *@
-@*                             } *@
-@*                             else *@
-@*                             { *@
-@* *@
-@*                             } *@
-@*                         } *@
-@*                     </tbody> *@
-@*                 </table> *@
-@*                 <paging total-records="@Model.Data.Rows" *@
-@*                         page-no="@pageNumber == 0 ? 1 : pageNumber" *@
-@*                         page-size="@pageSize == 0 ? 10 : pageSize" *@
-@*                         show-prev-next="true" *@
-@*                         show-total-pages="false" *@
-@*                         show-total-records="false" *@
-@*                         show-page-size-nav="true" *@
-@*                         show-first-numbered-page="true" *@
-@*                         show-last-numbered-page="true" *@
-@*                         query-string-key-page-no="PageNumber" *@
-@*                         query-string-key-page-size="PageSize" *@
-@*                         query-string-value="@@(Request.QueryString.Value)" *@
-@*                         gap-size="2"> *@
-@*                 </paging> *@
-@*             </div> *@
-@*         </div> *@
-@*     </div> *@
-@* </div> *@
-@* *@
-@* *@
-@* *@
+﻿@addTagHelper *, LazZiya.TagHelpers
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model IList<IdentityUser>
+@{
+    Layout = "~/Views/Shared/_BookLayout.cshtml";
+    int pageNumber = 1;
+    int pageSize = 10;
+    int.TryParse(Context.Request.Query["pageNumber"], out pageNumber);
+    int.TryParse(Context.Request.Query["pageSize"], out pageSize);
+}
+<ul class="nav mb-1">
+    <li class="nav-item">
+        <a class="nav-link btn btn-outline-primary" asp-aciton="Upload" href="/User/Create">
+            ایجاد کاربر جدید
+        </a>
+    </li>
+</ul>
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        لیست کاربران
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table" id="usersList">
+                    <thead>
+                    <tr>
+                        <th scope="col">ردیف</th>
+                        <th scope="col">نام کاربر</th>
+                        <th scope="col">عملیات</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int counter = ((pageNumber == 0 ? 1 : pageNumber) - 1) * pageSize + 1;
+                            foreach (var item in Model)
+                            {
+                                        <tr>
+                                            <th scope="row">@counter</th>
+                                            @{
+                                        counter++;
+                                            }
+                                            <td>@item.Email</td>
+                                            <td><a asp-action="Delete" class="btn btn-danger" asp-route-id="@item.Id">حذف</a></td>
+                                        </tr>
+                            }
+                            
+                        }
+                    </tbody>
+                </table>
+                <paging total-records="@Model.Count"
+                        page-no="@pageNumber == 0 ? 1 : pageNumber"
+                        page-size="@pageSize == 0 ? 10 : pageSize"
+                        show-prev-next="true"
+                        show-total-pages="false"
+                        show-total-records="false"
+                        show-page-size-nav="true"
+                        show-first-numbered-page="true"
+                        show-last-numbered-page="true"
+                        query-string-key-page-no="PageNumber"
+                        query-string-key-page-size="PageSize"
+                        query-string-value="@@(Request.QueryString.Value)"
+                        gap-size="2">
+                </paging>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

@@ -1,10 +1,12 @@
 using Amazon.S3;
 using Amazon.S3.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace MonitoringNetCore.Controllers;
 
+[Authorize]
 public class HomeController : Controller
 {
     // GET

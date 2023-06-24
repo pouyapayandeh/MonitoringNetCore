@@ -1,42 +1,64 @@
 @model IEnumerable<Monitoring.Site.Domain.Entities.Camera>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewBag.title = "دوربین ها";
+    ViewBag.menuNavigation = "پیشخوان";
+    ViewBag.menuItem = "دوربین ها";
+    ViewBag.activeNavigation = "navigationDashboard";
+    ViewBag.activeItem = "itemCameras";
+    Layout = "~/Views/Shared/_BookLayout.cshtml";
 }
-
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-        
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InsertedAt)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InsertedAt)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        لیست دوربین ها
+         <a asp-action="Create">اضافه کردن</a>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table" id="usersList">
+                    <thead>
+                    <tr>
+                        <th scope="col">ردیف</th>
+                        <th scope="col">نام کتاب</th>
+                        <th scope="col">شناسه کتاب</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.InsertedAt)
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+                @* total-records="@Model.Data.Rows" *@
+                @*         page-no="@pageNumber == 0 ? 1 : pageNumber" *@
+                @*         page-size="@pageSize == 0 ? 10 : pageSize" *@
+                <paging
+                    show-prev-next="true"
+                    show-total-pages="false"
+                    show-total-records="false"
+                    show-page-size-nav="true"
+                    show-first-numbered-page="true"
+                    show-last-numbered-page="true"
+                    query-string-key-page-no="PageNumber"
+                    query-string-key-page-size="PageSize"
+                    query-string-value="@@(Request.QueryString.Value)"
+                    gap-size="2">
+                </paging>
+            </div>
+        </div>
+    </div>
+</div>

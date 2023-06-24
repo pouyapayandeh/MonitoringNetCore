@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using System.IO;
-using Monitoring.Domain.Entities.Books;
 using Monitoring.Site.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;

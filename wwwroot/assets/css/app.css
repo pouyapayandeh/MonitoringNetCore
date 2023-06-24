@@ -9360,7 +9360,7 @@ body.form-membership .form-wrapper hr {
 
 .header .header-body ul.navbar-nav li.nav-item a.nav-link {
 	line-height: 100%;
-	width: 40px;
+	/*width: 40px;*/
 	height: 35px;
 	padding: 0;
 	display: -webkit-box;
@@ -11511,4 +11511,36 @@ body.dark .ui-datepicker select {
     background-color: #222538;
     color: inherit;
     border-color: #404356;
+}
+
+
+
+.form-signin {
+	width: 100%;
+	max-width: 330px;
+	padding: 15px;
+	margin: auto;
+}
+.form-signin .checkbox {
+	font-weight: 400;
+}
+.form-signin .form-control {
+	position: relative;
+	box-sizing: border-box;
+	height: auto;
+	padding: 10px;
+	font-size: 16px;
+}
+.form-signin .form-control:focus {
+	z-index: 2;
+}
+.form-signin input[type="email"] {
+	margin-bottom: -1px;
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+	margin-bottom: 10px;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
 }
