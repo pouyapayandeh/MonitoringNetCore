@@ -25,8 +25,15 @@ namespace Monitoring.Presistence.Contexts
             // modelBuilder.Entity<IdentityUser>().HasKey(iul => iul.Id);
             // modelBuilder.Entity<IdentityUserLogin<>>().HasKey(iul => iul.Id);
         }
+        
+        public void Migrate()
+        {
+            Console.WriteLine(Database.ProviderName);
+            this.Database.Migrate();
+        }
 
         public DbSet<Monitoring.Site.Domain.Entities.VideoFile> VideoFile { get; set; }
+        
         public DbSet<Monitoring.Site.Domain.Entities.Camera> Camera { get; set; }
     }
 }

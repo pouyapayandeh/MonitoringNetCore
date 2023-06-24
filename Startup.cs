@@ -16,6 +16,9 @@ using System.IO;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
+using Microsoft.Data.SqlClient;
+using Monitoring.Common;
+
 namespace Monitoring.Site
 {
     public class Startup
@@ -31,6 +34,23 @@ namespace Monitoring.Site
         public void ConfigureServices(IServiceCollection services)
         {
 
+            // Settings
+            var builder = new ConfigurationBuilder()
+                .AddEnvironmentVariables();
+            var configuration = builder.Build();
+
+            var settings = new Settings
+            {
+                AWSEndpointPublic = Environment.GetEnvironmentVariable("AWS_ENDPOINT_PUBLIC") ?? "http://127.0.0.1:9000/",
+                AWSEndpoint = Environment.GetEnvironmentVariable("AWS_ENDPOINT") ?? "http://127.0.0.1:9000/",
+                AWSAccessKeyId = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID") ?? "EkDiyryHuatO2kRS",
+                AWSSecretAccessKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY_ID") ?? "13Qcg4oiPxRL4LyVhpnxQx992UmoiRJ6"
+            };
+
+            services.Configure<Settings>(options => Configuration.Bind(options));
+            services.AddSingleton(settings);
+                
+            
             // // System
             // services.AddScoped<IDataBaseContext, DataBaseContext>();
             //
@@ -44,13 +64,11 @@ namespace Monitoring.Site
                 .AddJsonFile("appsettings.json",optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables().Build();
             
-
-            string connectionString = appSetting["ConnectionStrings:DefaultConnection"];
-            // services.AddEntityFrameworkSqlServer().AddDbContext<DataBaseContext>(
-            //     options => options.UseSqlite(@"DataSource=mydatabase.db;"));
             
-            services.AddDbContext<DataBaseContext>(options =>
-                options.UseSqlite(@"DataSource=mydatabase.db;"));
+            string connectionString = appSetting["ConnectionStrings:PostgresConnection"];
+            services.AddDbContext<DataBaseContext>(
+                options => options.UseNpgsql(connectionString));
+            
 
             services.AddDefaultIdentity<IdentityUser>(options =>
                 {
@@ -64,7 +82,6 @@ namespace Monitoring.Site
                 })
                 .AddEntityFrameworkStores<DataBaseContext>();
             
-
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -77,10 +94,10 @@ namespace Monitoring.Site
                 .AddScoped<IAmazonS3>(p => {
                     var config = new AmazonS3Config
                     {
-                        ServiceURL = "http://localhost:9000/",
+                        ServiceURL = settings.AWSEndpoint,
                         ForcePathStyle = true
                     };
-                    return new AmazonS3Client("EkDiyryHuatO2kRS", "13Qcg4oiPxRL4LyVhpnxQx992UmoiRJ6", config);
+                    return new AmazonS3Client(settings.AWSAccessKeyId, settings.AWSSecretAccessKey, config);
                 });
         }
 

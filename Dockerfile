@@ -17,6 +17,9 @@ FROM build AS publish
 RUN dotnet publish "MonitoringNetCore.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
+EXPOSE 7009
+EXPOSE 5273
 WORKDIR /app
+RUN apt-get update && apt-get install ffmpeg -y
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "MonitoringNetCore.dll"]

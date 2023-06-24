@@ -99,6 +99,7 @@ namespace MonitoringNetCore.Controllers
 
             if (ModelState.IsValid)
             {
+                videoFile.UploadDate = DateTime.SpecifyKind(videoFile.UploadDate, DateTimeKind.Utc);
                 _context.Add(videoFile);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -149,6 +150,7 @@ namespace MonitoringNetCore.Controllers
                 {
                     videoFile.FormFile.CopyTo(newMemoryStream);
 
+                    
                     var uploadRequest = new TransferUtilityUploadRequest
                     {
                         InputStream = newMemoryStream,
@@ -186,11 +188,10 @@ namespace MonitoringNetCore.Controllers
                 IdentityUser user = _context.Users.Where(user => user.Email == User.Identity.Name).ToList().First();
                 var video = new VideoFile
                 {
-                    
+                    UploadDate = DateTime.UtcNow,
                     UserId = user.Id, 
                     Path = Path.Combine("uploads",uniqueFileName),
-                    ThumbnailPath =  Path.Combine("thumbnails", uniqueFileName + ".png"),
-                    UploadDate = DateTime.Now
+                    ThumbnailPath =  Path.Combine("thumbnails", uniqueFileName + ".png")
                 };
                 _context.Add(video);
                 await _context.SaveChangesAsync();
