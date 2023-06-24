@@ -28,16 +28,17 @@
 <div class="row row-cols-1 row-cols-md-6 g-4">
     @foreach (var item in Model)
     {
-        <div class="col">
+        <div class="col col-4">
             <div class="card">
-                <img src="@item.Path" class="card-img-top" alt="" />
+                <img src="http://localhost:9000/@item.ThumbnailPath" class="card-img-top" alt="" />
                 <div class="card-body">
                     <h5 class="card-title">@Html.DisplayFor(modelItem => item.UploadDate)</h5>
                     <p class="card-text">@Html.DisplayFor(modelItem => item.Path)</p>
                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary">ویرایش</a>
                         <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">حذف</a>
                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary">جزئیات</a>
-                </div>
+                        <a href="http://localhost:9000/@item.Path" class="btn btn-outline-primary" target="_blank">مشاهده</a>
+                    </div>
             </div>
         </div>
     }

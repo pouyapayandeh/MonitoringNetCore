@@ -77,7 +77,7 @@ namespace Monitoring.Site
                 .AddScoped<IAmazonS3>(p => {
                     var config = new AmazonS3Config
                     {
-                        ServiceURL = "http://172.30.21.175:9000/",
+                        ServiceURL = "http://localhost:9000/",
                         ForcePathStyle = true
                     };
                     return new AmazonS3Client("EkDiyryHuatO2kRS", "13Qcg4oiPxRL4LyVhpnxQx992UmoiRJ6", config);
@@ -87,6 +87,16 @@ namespace Monitoring.Site
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var _userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                var user = new IdentityUser("admin@test.com");
+                _userManager.SetUserNameAsync(user, "admin@test.com").Wait();
+                _userManager.SetEmailAsync(user,"admin@test.com").Wait();
+                _userManager.CreateAsync(user,"admin").Wait();
+            }
+            
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

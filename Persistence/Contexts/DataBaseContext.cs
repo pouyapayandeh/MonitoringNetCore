@@ -15,7 +15,8 @@ namespace Monitoring.Presistence.Contexts
     {
         public DataBaseContext(DbContextOptions options) : base(options)
         {
-        
+            // Database
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

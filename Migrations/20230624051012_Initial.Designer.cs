@@ -11,8 +11,8 @@ using Monitoring.Presistence.Contexts;
 namespace MonitoringNetCore.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20230622142649_FirstMigration")]
-    partial class FirstMigration
+    [Migration("20230624051012_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -215,6 +215,31 @@ namespace MonitoringNetCore.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Monitoring.Site.Domain.Entities.Camera", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("InsertedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Camera");
+                });
+
             modelBuilder.Entity("Monitoring.Site.Domain.Entities.VideoFile", b =>
                 {
                     b.Property<int>("Id")
@@ -228,7 +253,14 @@ namespace MonitoringNetCore.Migrations
                     b.Property<DateTime>("UploadDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("VideoFile");
                 });
@@ -282,6 +314,17 @@ namespace MonitoringNetCore.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Monitoring.Site.Domain.Entities.VideoFile", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("IdentityUser");
                 });
 #pragma warning restore 612, 618
         }

@@ -4,20 +4,23 @@
 
 namespace MonitoringNetCore.Migrations
 {
-    public partial class AddUrlColumnToCamera : Migration
+    public partial class ThumbnailToVideo : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                    name: "Url",
-                    table: "Camera",
-                    type: "TEXT",
-                    nullable: false);
+                name: "ThumbnailPath",
+                table: "VideoFile",
+                type: "TEXT",
+                nullable: false,
+                defaultValue: "");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-
+            migrationBuilder.DropColumn(
+                name: "ThumbnailPath",
+                table: "VideoFile");
         }
     }
 }

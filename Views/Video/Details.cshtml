@@ -14,13 +14,15 @@
                             <th>شناسه</th>
                             <th>تاریخ</th>
                             <th>مسیر</th>
+                            <th>کاربر</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>#</td>
+                            <td>@Model.Id</td>
                             <td>@Model.UploadDate</td>
                             <td>@Model.Path</td>
+                            <td>@Model.IdentityUser.Email</td>
                         </tr>
                     </tbody>
                 </table>
