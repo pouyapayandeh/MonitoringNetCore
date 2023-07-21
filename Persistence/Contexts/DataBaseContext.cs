@@ -35,5 +35,6 @@ namespace Monitoring.Presistence.Contexts
         public DbSet<Monitoring.Site.Domain.Entities.VideoFile> VideoFile { get; set; }
         
         public DbSet<Monitoring.Site.Domain.Entities.Camera> Camera { get; set; }
+        public DbSet<Monitoring.Site.Domain.Entities.ProcessLog> ProcessLogs { get; set; }
     }
 }

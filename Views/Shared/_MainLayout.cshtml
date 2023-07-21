@@ -30,6 +30,10 @@
         case "itemCameras":
             ViewData["itemCameras"] = "active";
             break;
+        case "itemProcessLog":
+            ViewData["itemProcessLog"] = "active";
+            break;
+                
     }
 }
 
@@ -52,9 +56,16 @@
     <link rel="stylesheet" href="~/vendors/bundle.css" type="text/css">
     <!-- App styles -->
     <link rel="stylesheet" href="~/assets/css/app.css" type="text/css">
+    
+    <script src="~/vendors/bundle.js"></script>
+    <script src="~/vendors/jquery-form/jquery.form.js"></script>
+    
+    <!-- App scripts -->
+    <script src="~/assets/js/app.js"></script>
 </head>
 
 <body>
+
 <!-- begin::navigation -->
 <div class="navigation">
     <div class="navigation-icon-menu">
@@ -80,6 +91,9 @@
             </li>
             <li>
                 <a id="itemUsers" class="@ViewData["itemUsers"]" href="/User">کاربران</a>
+            </li>
+            <li>
+                <a id="itemUsers" class="@ViewData["itemProcessLog"]" href="/ProcessLog">پردازش ها</a>
             </li>
         </ul>
     </div>
@@ -163,10 +177,7 @@
 </main>
 <!-- end::main content -->
 <!-- Plugin scripts -->
-<script src="~/vendors/bundle.js"></script>
 
-<!-- App scripts -->
-<script src="~/assets/js/app.js"></script>
 
 @RenderSection("Scripts", required: false)
 </body>

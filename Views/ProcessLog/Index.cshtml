@@ -1,6 +1,7 @@
 ﻿@addTagHelper *, LazZiya.TagHelpers
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@model IList<IdentityUser>
+@inject Monitoring.Common.Settings _settings 
+@model List<Monitoring.Site.Domain.Entities.ProcessLog>
 @{
     Layout = "~/Views/Shared/_MainLayout.cshtml";
     int pageNumber = 1;
@@ -8,13 +9,7 @@
     int.TryParse(Context.Request.Query["pageNumber"], out pageNumber);
     int.TryParse(Context.Request.Query["pageSize"], out pageSize);
 }
-<ul class="nav mb-1">
-    <li class="nav-item">
-        <a class="nav-link btn btn-outline-primary" asp-aciton="Upload" href="/User/Create">
-            ایجاد کاربر جدید
-        </a>
-    </li>
-</ul>
+
 <div class="card">
     <div class="card-header d-flex justify-content-between">
         لیست کاربران
@@ -26,8 +21,9 @@
                     <thead>
                     <tr>
                         <th scope="col">ردیف</th>
-                        <th scope="col">نام کاربر</th>
-                        <th scope="col">عملیات</th>
+                        <th scope="col">ایدی ویدئو</th>
+                        <th scope="col">وضعیت</th>
+                        <th scope="col">خروجی</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -40,8 +36,12 @@
                                             @{
                                         counter++;
                                             }
-                                            <td>@item.Email</td>
-                                            <td><a asp-action="Delete" class="btn btn-danger" asp-route-id="@item.Id">حذف</a></td>
+                                            <td>@item.VideoId</td>
+                                            <td>@item.Status</td>
+                                            <td>@item.Path
+                                              <a href="@_settings.AWSEndpointPublic@item.Path" class="btn btn-outline-primary" target="_blank">@item.Path</a>
+                                                </td>
+                                            @* <td><a asp-action="Delete" class="btn btn-danger" asp-route-id="@item.Id">حذف</a></td> *@
                                         </tr>
                             }
                             

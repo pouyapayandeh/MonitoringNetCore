@@ -1,22 +1,59 @@
 ﻿@model MonitoringNetCore.Controllers.UploadedVideo
 
 @{
-    Layout = "~/Views/Shared/_BookLayout.cshtml";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
 }
 
+<script>
+$(function() {
 
+    var bar = $('.bar');
+    var percent = $('.percent');
+    var status = $('#status');
+
+    $('form').ajaxForm({
+        beforeSend: function() {
+            status.empty();
+            var percentVal = '0%';
+            bar.width(percentVal);
+            percent.html(percentVal);
+            status.html("در حال آپلود به سرور");
+        },
+        uploadProgress: function(event, position, total, percentComplete) {
+            var percentVal = percentComplete + '%';
+            bar.width(percentVal);
+            percent.html(percentVal);
+            if (percentComplete === 100)
+                status.html("در حال آپلود از سرور به S3  - منتظر باشید ");
+            
+        },
+        complete: function(xhr) {
+             location.assign('@Url.Action("Index", "Video")')
+        }
+    });
+}); 
+
+</script>
 <div class="row row-cols-1 g-4">
         <div class="col">
             <div class="card">
                 <div class="card-body">
-                <form asp-aciton="Upload" method="post" enctype="multipart/form-data">
-                    <label asp-for="FormFile" for="formFileMultiple" class="form-label">فایل خود را انتخاب کنید:</label>
-                    <input asp-for="FormFile" class="form-control" type="file" id="formFileMultiple">
-                    <div asp-validation-for="FormFile" class="invalid-feedback">
+                    <form asp-aciton="Upload" method="post" enctype="multipart/form-data">
+                        <label asp-for="FormFile" for="formFileMultiple" class="form-label">فایل خود را انتخاب کنید:</label>
+                        <input asp-for="FormFile" class="form-control" type="file" id="formFileMultiple">
+                        <div asp-validation-for="FormFile" class="invalid-feedback">
+                        </div>
+                        <p asp-validation-summary="ModelOnly" class="text-danger"></p>
+                        <button type="submit" class="mb-4 btn btn-primary">بارگذاری فیلم</button>
+                    </form>
+                    
+                    <div class="progress">
+                        <div class="progress-bar bar" style="background-color: #0abb87;text-align: center">
+                            <div class="percent" style="color: #FFFFFF">0%</div >
+                        </div >
                     </div>
-                    <p asp-validation-summary="ModelOnly" class="text-danger"></p>
-                    <button type="submit" class="mb-4 btn btn-primary">بارگذاری فیلم</button>
-                </form>
+                    
+                    <div id="status"></div>
                 </div>
             </div>
         </div>

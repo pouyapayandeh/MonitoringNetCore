@@ -1,0 +1,13 @@
+[
+    {
+        "outputFileName": "wwwroot/vendors/site.min.js",
+        "inputFiles": [
+            "wwwroot/vendors/**/*.js"
+        ],
+        "minify": {
+            "enabled": true,
+            "renameLocals": true
+        },
+        "sourceMap": false
+    }
+]

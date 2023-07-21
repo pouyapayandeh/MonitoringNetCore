@@ -31,6 +31,8 @@ services:
       POSTGRES_DB: monitoring
     volumes:
       - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
   minio:
     image: minio/minio
@@ -55,6 +57,8 @@ services:
       /usr/bin/mc anonymous set public myminio/uploads;
       /usr/bin/mc mb myminio/thumbnails;
       /usr/bin/mc anonymous set public myminio/thumbnails;
+      /usr/bin/mc mb myminio/processed;
+      /usr/bin/mc anonymous set public myminio/processed;
       exit 0;
       "
 

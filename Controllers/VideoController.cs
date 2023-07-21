@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Monitoring.Presistence.Contexts;
 using Monitoring.Site.Domain.Entities;
+using Monitoring.Site.Services;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace MonitoringNetCore.Controllers
@@ -30,13 +31,19 @@ namespace MonitoringNetCore.Controllers
         private readonly DataBaseContext _context;
         private readonly IHostingEnvironment hostingEnvironment;
         private readonly ILogger _logger;
+        private readonly AiProcessor _aiProcessor;
         IAmazonS3 S3Client { get; set; }
-        public VideoController(DataBaseContext context,IHostingEnvironment environment,IAmazonS3 s3Client,ILogger<VideoController> logger)
+        public VideoController(DataBaseContext context,
+            IHostingEnvironment environment,
+            IAmazonS3 s3Client,
+            ILogger<VideoController> logger,
+            AiProcessor aiProcessor)
         {
             _context = context;
             hostingEnvironment = environment;
             this.S3Client = s3Client;
             _logger = logger;
+            _aiProcessor = aiProcessor;
         }
 
         // GET: Video
@@ -129,7 +136,8 @@ namespace MonitoringNetCore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [RequestSizeLimit(500 * 1024 * 1024)]   
+        [RequestSizeLimit(50L * 1024L * 1024L* 1024L)]   
+        [RequestFormLimits(MultipartBodyLengthLimit = 50L * 1024L * 1024L* 1024L)]
         public async Task<IActionResult> Upload(UploadedVideo videoFile)
         {
 
@@ -146,9 +154,9 @@ namespace MonitoringNetCore.Controllers
                 videoFile.FormFile.CopyTo(new FileStream(filePath, FileMode.Create));
                 
                 
-                using (var newMemoryStream = new MemoryStream())
+                using (var newMemoryStream = videoFile.FormFile.OpenReadStream())
                 {
-                    videoFile.FormFile.CopyTo(newMemoryStream);
+                    
 
                     
                     var uploadRequest = new TransferUtilityUploadRequest
@@ -289,6 +297,16 @@ namespace MonitoringNetCore.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        
+        // POST: Video/Delete/5
+
+        public async Task<IActionResult> BeginProcess(int id)
+        {
+            var videoFile = await _context.VideoFile.FindAsync(id);
+            Task.Run(async () => await  _aiProcessor.ProcessWithVideoOutput(videoFile));
+            return RedirectToAction(nameof(Index));
+        }
+        
         private bool VideoFileExists(int id)
         {
             return _context.VideoFile.Any(e => e.Id == id);

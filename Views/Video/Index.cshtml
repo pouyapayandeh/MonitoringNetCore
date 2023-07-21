@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Monitoring.Site.Domain.Entities.VideoFile>
 @inject Monitoring.Common.Settings _settings 
 @{
-    Layout = "~/Views/Shared/_BookLayout.cshtml";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
 }
 
 <ul class="nav">
@@ -36,7 +36,8 @@
                     <p class="card-text">@Html.DisplayFor(modelItem => item.Path)</p>
                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary">ویرایش</a>
                         <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">حذف</a>
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary">جزئیات</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary">جزئیات</a>
+                    <a asp-action="BeginProcess" asp-route-id="@item.Id" class="btn btn-outline-primary">پردازش</a>
                         <a href="@_settings.AWSEndpointPublic@item.Path" class="btn btn-outline-primary" target="_blank">مشاهده</a>
                     </div>
             </div>

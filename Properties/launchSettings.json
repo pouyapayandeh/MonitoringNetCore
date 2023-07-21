@@ -1,14 +1,44 @@
 {
   "profiles": {
-    "MonitoringNetCore": {
+    "Local": {
       "commandName": "Project",
+      "hotReloadEnabled": true,
+      "hotReloadProfile": "aspnetcore",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DATABASE_HOST": "127.0.0.1",
+        "DATABASE_USER": "user",
+        "DATABASE_PASSWORD": "password",
+        "DATABASE_NAME": "monitoring",
+        "AWS_ENDPOINT": "http://127.0.0.1:9000",
+        "AWS_ACCESS_KEY_ID": "minioaccesskey",
+        "AWS_SECRET_ACCESS_KEY_ID": "miniosecretkey",
+        "VIDEO_PROCESSOR_SERVICE_URL": "http://127.0.0.1:8000",
+        "ASPNETCORE_URLS": "http://*:5273"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5273"
     },
+
+    "Production": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "DATABASE_HOST": "127.0.0.1",
+        "DATABASE_USER": "user",
+        "DATABASE_PASSWORD": "password",
+        "DATABASE_NAME": "monitoring",
+        "AWS_ENDPOINT": "http://127.0.0.1:9000",
+        "AWS_ACCESS_KEY_ID": "minioaccesskey",
+        "AWS_SECRET_ACCESS_KEY_ID": "miniosecretkey",
+        "VIDEO_PROCESSOR_SERVICE_URL": "http://127.0.0.1:8000",
+        "ASPNETCORE_URLS": "http://*:5273"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:5273"
+    },
+    
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,

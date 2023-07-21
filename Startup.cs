@@ -18,6 +18,7 @@ using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
 using Microsoft.Data.SqlClient;
 using Monitoring.Common;
+using Monitoring.Site.Services;
 
 namespace Monitoring.Site
 {
@@ -44,7 +45,8 @@ namespace Monitoring.Site
                 AWSEndpointPublic = Environment.GetEnvironmentVariable("AWS_ENDPOINT_PUBLIC") ?? "http://127.0.0.1:9000/",
                 AWSEndpoint = Environment.GetEnvironmentVariable("AWS_ENDPOINT") ?? "http://127.0.0.1:9000/",
                 AWSAccessKeyId = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID") ?? "EkDiyryHuatO2kRS",
-                AWSSecretAccessKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY_ID") ?? "13Qcg4oiPxRL4LyVhpnxQx992UmoiRJ6"
+                AWSSecretAccessKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY_ID") ?? "13Qcg4oiPxRL4LyVhpnxQx992UmoiRJ6",
+                VideoProcessorServiceURL = Environment.GetEnvironmentVariable("VIDEO_PROCESSOR_SERVICE_URL") ?? "http://127.0.0.1:8000/"
             };
 
             services.Configure<Settings>(options => Configuration.Bind(options));
@@ -59,13 +61,13 @@ namespace Monitoring.Site
             // services.AddScoped<IAddBookService, AddBookService>();
             //
 
-            var appSetting = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json",optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables().Build();
+            // var appSetting = new ConfigurationBuilder()
+            //     .SetBasePath(Directory.GetCurrentDirectory())
+            //     .AddJsonFile("appsettings.json",optional: true, reloadOnChange: true)
+            //     .AddEnvironmentVariables().Build();
             
             
-            string connectionString = appSetting["ConnectionStrings:PostgresConnection"];
+            string connectionString = Configuration["ConnectionStrings:PostgresConnection"];
             services.AddDbContext<DataBaseContext>(
                 options => options.UseNpgsql(connectionString));
             
@@ -99,6 +101,8 @@ namespace Monitoring.Site
                     };
                     return new AmazonS3Client(settings.AWSAccessKeyId, settings.AWSSecretAccessKey, config);
                 });
+            
+            services.AddScoped<AiProcessor, AiProcessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

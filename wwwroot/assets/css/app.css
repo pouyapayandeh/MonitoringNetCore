@@ -11544,3 +11544,7 @@ body.dark .ui-datepicker select {
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
 }
+.glowcard:hover {
+	color: rgba(255, 255, 255, 1);
+	box-shadow: 0 5px 15px rgba(145, 92, 182, .4);
+}

@@ -1,75 +1,53 @@
-﻿@addTagHelper *, LazZiya.TagHelpers
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@* @using Monitoring.Application.Services.Books.Queries.GetBook; *@
-@using Monitoring.Common.Dto;
-@* @model ResultDto<ResultGetBookDto>; *@
-@{
-    Layout = "~/Views/Shared/_BookLayout.cshtml";
-    int pageNumber = 1;
-    int pageSize = 10;
-    int.TryParse(Context.Request.Query["pageNumber"], out pageNumber);
-    int.TryParse(Context.Request.Query["pageSize"], out pageSize);
+﻿@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
 }
-
-<div class="card">
-    <div class="card-header d-flex justify-content-between">
-        لیست کتاب ها
-    </div>
-    <br />
-    <div class="card">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table" id="usersList">
-                    <thead>
-                        <tr>
-                            <th scope="col">ردیف</th>
-                            <th scope="col">نام کتاب</th>
-                            <th scope="col">شناسه کتاب</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @* @{ *@
-                        @*     if (Model.IsSuccess) *@
-                        @*     { *@
-                        @*         int counter = ((pageNumber == 0 ? 1 : pageNumber) - 1) * pageSize + 1; *@
-                        @*         foreach (var item in Model.Data.Books) *@
-                        @*         { *@
-                        @*             <tr> *@
-                        @*                 <th scope="row">@counter</th> *@
-                        @*                 @{ *@
-                        @*                     counter++; *@
-                        @*                 } *@
-                        @*                 <td>@item.Name</td> *@
-                        @*                 <td>@item.Number</td> *@
-                        @*             </tr> *@
-                        @*         } *@
-                        @*     } *@
-                        @*     else *@
-                        @*     { *@
-                        @* *@
-                        @*     } *@
-                        @* } *@
-                    </tbody>
-                </table>
-                @* total-records="@Model.Data.Rows" *@
-                @*         page-no="@pageNumber == 0 ? 1 : pageNumber" *@
-                @*         page-size="@pageSize == 0 ? 10 : pageSize" *@
-                <paging 
-                show-prev-next="true"
-                        show-total-pages="false"
-                        show-total-records="false"
-                        show-page-size-nav="true"
-                        show-first-numbered-page="true"
-                        show-last-numbered-page="true"
-                        query-string-key-page-no="PageNumber"
-                        query-string-key-page-size="PageSize"
-                        query-string-value="@@(Request.QueryString.Value)"
-                        gap-size="2">
-                </paging>
+<div class="row row-cols-1 row-cols-md-2">
+    <div class="col mb-4">
+        <a asp-action="Index" asp-controller="Video" class="stretched-link">
+        <div class="card bg-success glowcard" >
+            @* <img src="..." class="card-img-top" alt="..."> *@
+            <div class="card-body text-center">
+                <h5 class="card-title">ویديو ها</h5>
+                @* <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p> *@
             </div>
+            
         </div>
+        </a>
     </div>
+    <div class="col mb-4">
+        <a asp-action="Index" asp-controller="User" class="stretched-link">
+        <div class="card bg-warning glowcard" >
+            @* <img src="..." class="card-img-top" alt="..."> *@
+            <div class="card-body text-center">
+                <h5 class="card-title">کاربران</h5>
+                @* <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p> *@
+            </div>
+            
+        </div>
+        </a>
+    </div>
+    <div class="col mb-4">
+        <a asp-action="Index" asp-controller="Camera" class="stretched-link">
+        <div class="card bg-primary glowcard" >
+            @* <img src="..." class="card-img-top" alt="..."> *@
+            <div class="card-body text-center">
+                <h5 class="card-title">دوربین ها</h5>
+                @* <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p> *@
+            </div>
+            
+        </div>
+        </a>
+    </div>
+     @* <div class="col mb-4"> *@
+     @*     <a asp-action="Index" asp-controller="Video" class="stretched-link"> *@
+     @*     <div class="card bg-success glowcard" > *@
+     @*         $1$ <img src="..." class="card-img-top" alt="..."> #1# *@
+     @*         <div class="card-body"> *@
+     @*             <h5 class="card-title">ویديو ها</h5> *@
+     @*             $1$ <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p> #1# *@
+     @*         </div> *@
+     @*          *@
+     @*     </div> *@
+     @*     </a> *@
+     @* </div> *@
 </div>
-
-
-
