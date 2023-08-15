@@ -1,0 +1,76 @@
+﻿
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MonitoringNetCore.Common
+@using MonitoringNetCore.Services
+@inject Settings _settings 
+@model MonitoringNetCore.Domain.Entities.Camera
+@inject CameraService _cameraService
+@{
+	ViewData["Title"] = "جزییات";
+	ViewBag.title = "دوربین ها";
+	ViewBag.menuNavigation = "پیشخوان";
+	ViewBag.menuItem = "دوربین ها";
+    ViewBag.activeNavigation = "navigationDashboard";
+    
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<h4>@ViewData["Title"]</h4>
+
+<div>
+    <hr/>
+    <div class="row">
+      <div class="col-sm-6">
+            <video id="video0" width="640" height="480"  style="border: 1px solid #000;" src0="@await _cameraService.GetLiveStreamForCamera(Model.Id)">
+                Your browser does not support the video tag.
+            </video>
+      </div>
+      <div class="col-sm-6">
+            <video id="video1" width="640" height="480" style="border: 1px solid #000;" src0="@await _cameraService.GetProcessStreamForCamera(Model.Id)">
+                Your browser does not support the video tag.
+            </video>
+      </div>
+    </div>
+</div>
+
+<div>
+	  <a asp-action="StopAll" asp-route-id="@Model.Id" class="btn btn-outline-primary">خروج</a>
+
+	<a asp-action="Index">بازگشت به لیست</a>
+</div>
+<script>
+const handel = (id) =>{
+			const video = document.getElementById(id);
+        
+        	// always prefer hls.js over native HLS.
+        	// this is because some Android versions support native HLS
+        	// but don't support fMP4s.
+        	if (Hls.isSupported()) {
+        		const hls = new Hls({
+        			maxLiveSyncPlaybackRate: 1.5,
+        		});
+        
+        		hls.on(Hls.Events.ERROR, (evt, data) => {
+        			if (data.fatal) {
+        				hls.destroy();
+        
+        				setTimeout(handel, 2000,id);
+        			}
+        		});
+        
+        		hls.loadSource(video.getAttribute("src0")+"/"+'index.m3u8');
+        		hls.attachMedia(video);
+        
+        		video.play();
+        
+        	} 
+	}
+const create = () => {
+	
+	handel("video0");
+	handel("video1");
+};
+
+window.addEventListener('DOMContentLoaded', create);
+
+</script>

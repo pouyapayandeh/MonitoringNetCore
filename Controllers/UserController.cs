@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Monitoring.Presistence.Contexts;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
+using MonitoringNetCore.Persistence.Contexts;
 
 namespace MonitoringNetCore.Controllers;
 public class NewUser
@@ -19,6 +20,8 @@ public class NewUser
     [Display(Name = "Password")]
     public string Password { get; set; }
 }
+[Authorize]
+[Authorize(Roles = "Administrator")]
 public class UserController : Controller
 {
     private readonly DataBaseContext _context;
@@ -80,6 +83,13 @@ public class UserController : Controller
         }
 
         var user = _userManager.Users.Where(user => user.Id.Equals(id)).First();
+        var roles = await _userManager.GetRolesAsync(user);
+        if (roles.Contains("Administrator"))
+        {
+            ViewBag.errors = new List<string>();
+            ((List<string>) ViewBag.errors).Add("شما نمی ‌توانید این کاربر را حذف کنید!");
+            return Index();
+        }
         IdentityResult result = await  _userManager.DeleteAsync(user);
         if (! result.Succeeded)
         {

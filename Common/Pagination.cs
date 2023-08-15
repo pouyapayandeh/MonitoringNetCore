@@ -1,16 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace Monitoring.Common
+namespace MonitoringNetCore.Common
 {
-    public static class Pagination
+    public class PaginatedList<T> : List<T>
     {
-        public static IEnumerable<TSource> ToPaged<TSource> (this IEnumerable<TSource> source, int page, int pageSize, out int rowsCount)
+        public int PageIndex { get; private set; }
+        public int TotalPages { get; private set; }
+
+        public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
         {
-            rowsCount = source.Count();
-            return source.Skip((page - 1) * pageSize).Take(pageSize);
+            PageIndex = pageIndex;
+            TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+
+            this.AddRange(items);
+        }
+
+        public bool HasPreviousPage => PageIndex > 1;
+
+        public bool HasNextPage => PageIndex < TotalPages;
+
+        public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageIndex, int pageSize)
+        {
+            var count = await source.CountAsync();
+            var items = await source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
+            return new PaginatedList<T>(items, count, pageIndex, pageSize);
         }
     }
 }

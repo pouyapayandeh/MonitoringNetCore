@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Monitoring.Presistence.Contexts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using System.IO;
@@ -18,7 +17,11 @@ using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
 using Microsoft.Data.SqlClient;
 using Monitoring.Common;
-using Monitoring.Site.Services;
+using Monitoring.Common.Middleware;
+using MonitoringNetCore.Common;
+using MonitoringNetCore.Persistence.Contexts;
+using MonitoringNetCore.Services;
+using MonitoringNetCore.Services.BackgroundServices;
 
 namespace Monitoring.Site
 {
@@ -40,37 +43,14 @@ namespace Monitoring.Site
                 .AddEnvironmentVariables();
             var configuration = builder.Build();
 
-            var settings = new Settings
-            {
-                AWSEndpointPublic = Environment.GetEnvironmentVariable("AWS_ENDPOINT_PUBLIC") ?? "http://127.0.0.1:9000/",
-                AWSEndpoint = Environment.GetEnvironmentVariable("AWS_ENDPOINT") ?? "http://127.0.0.1:9000/",
-                AWSAccessKeyId = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID") ?? "EkDiyryHuatO2kRS",
-                AWSSecretAccessKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY_ID") ?? "13Qcg4oiPxRL4LyVhpnxQx992UmoiRJ6",
-                VideoProcessorServiceURL = Environment.GetEnvironmentVariable("VIDEO_PROCESSOR_SERVICE_URL") ?? "http://127.0.0.1:8000/"
-            };
 
-            services.Configure<Settings>(options => Configuration.Bind(options));
+            var settings = new Settings();
+            Configuration.Bind(settings);
             services.AddSingleton(settings);
-                
             
-            // // System
-            // services.AddScoped<IDataBaseContext, DataBaseContext>();
-            //
-            // // Plate
-            // services.AddScoped<IGetBookService, GetBookService>();
-            // services.AddScoped<IAddBookService, AddBookService>();
-            //
-
-            // var appSetting = new ConfigurationBuilder()
-            //     .SetBasePath(Directory.GetCurrentDirectory())
-            //     .AddJsonFile("appsettings.json",optional: true, reloadOnChange: true)
-            //     .AddEnvironmentVariables().Build();
-            
-            
-            string connectionString = Configuration["ConnectionStrings:PostgresConnection"];
             services.AddDbContext<DataBaseContext>(
-                options => options.UseNpgsql(connectionString));
-            
+                options => options.UseNpgsql(settings.ConnectionStrings.PostgresConnection));
+
 
             services.AddDefaultIdentity<IdentityUser>(options =>
                 {
@@ -81,7 +61,7 @@ namespace Monitoring.Site
                     options.Password.RequireLowercase = false;
                     options.Password.RequireUppercase = false;
 
-                })
+                }).AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<DataBaseContext>();
             
             services.Configure<CookiePolicyOptions>(options =>
@@ -96,13 +76,18 @@ namespace Monitoring.Site
                 .AddScoped<IAmazonS3>(p => {
                     var config = new AmazonS3Config
                     {
-                        ServiceURL = settings.AWSEndpoint,
+                        ServiceURL = settings.AWS.Endpoint,
                         ForcePathStyle = true
                     };
-                    return new AmazonS3Client(settings.AWSAccessKeyId, settings.AWSSecretAccessKey, config);
+                    return new AmazonS3Client(settings.AWS.AccessKeyId, settings.AWS.SecretAccessKey, config);
                 });
             
-            services.AddScoped<AiProcessor, AiProcessor>();
+            services.AddScoped<AiService, AiService>();
+            services.AddScoped<LicenseService, LicenseService>();
+            services.AddScoped<CameraService, CameraService>();
+            services.AddScoped<VideoFileService, VideoFileService>();
+            services.AddHostedService<CameraRecordHostedService>();
+            services.AddHostedService<AiJobHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -111,10 +96,23 @@ namespace Monitoring.Site
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
                 var _userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                var _roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                var _task = _roleManager.RoleExistsAsync("Administrator");
+                _task.Wait();
+                
+                if (!_task.Result)
+                {
+                    _roleManager.CreateAsync(new IdentityRole("Administrator")).Wait();
+                }
+                
+                
                 var user = new IdentityUser("admin@test.com");
-                _userManager.SetUserNameAsync(user, "admin@test.com").Wait();
-                _userManager.SetEmailAsync(user,"admin@test.com").Wait();
                 _userManager.CreateAsync(user,"admin").Wait();
+                _userManager.SetUserNameAsync(user, "admin@test.com").Wait();
+                _userManager.AddToRoleAsync(user, "Administrator").Wait();
+                _userManager.SetEmailAsync(user,"admin@test.com").Wait();
+                
             }
             
             
@@ -139,7 +137,7 @@ namespace Monitoring.Site
             app.UseAuthentication();
             app.UseAuthorization();
 
-            //app.UseMiddleware<RequestResponseLoggingMiddleware>();
+            app.UseMiddleware<LicenseMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

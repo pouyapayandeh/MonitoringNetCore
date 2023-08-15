@@ -1,4 +1,5 @@
-﻿@inject SignInManager<IdentityUser> SignInManager
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
 @{
@@ -14,27 +15,9 @@
             break;
     }
 
-    ViewData["itemHome"] = "";
-
-    switch (ViewBag.activeItem)
-    {
-        case "itemHome":
-            ViewData["itemHome"] = "active";
-            break;
-        case "itemVideos":
-            ViewData["itemVideos"] = "active";
-            break;
-        case "itemUsers":
-            ViewData["itemUsers"] = "active";
-            break;
-        case "itemCameras":
-            ViewData["itemCameras"] = "active";
-            break;
-        case "itemProcessLog":
-            ViewData["itemProcessLog"] = "active";
-            break;
-                
-    }
+    // ViewData["itemHome"] = "";
+    if(ViewBag.activeItem != null)
+        ViewData[ViewBag.activeItem] = "active";
 }
 
 <!DOCTYPE html>
@@ -58,6 +41,7 @@
     <link rel="stylesheet" href="~/assets/css/app.css" type="text/css">
     
     <script src="~/vendors/bundle.js"></script>
+    <script src="~/vendors/hls.js"></script>
     <script src="~/vendors/jquery-form/jquery.form.js"></script>
     
     <!-- App scripts -->
@@ -93,7 +77,7 @@
                 <a id="itemUsers" class="@ViewData["itemUsers"]" href="/User">کاربران</a>
             </li>
             <li>
-                <a id="itemUsers" class="@ViewData["itemProcessLog"]" href="/ProcessLog">پردازش ها</a>
+                <a id="itemProcessLog" class="@ViewData["itemProcessLog"]" href="/Jobs">پردازش ها</a>
             </li>
         </ul>
     </div>
@@ -104,9 +88,9 @@
     <!-- begin::header logo -->
     <div class="header-logo">
         <a href="/Home/Index">
-            <img class="large-logo" src="~/assets/media/image/logo.png" alt="...">
-            <img class="small-logo" src="~/assets/media/image/logo-sm.png" alt="...">
-            <img class="dark-logo" src="~/assets/media/image/logo-dark.png" alt="...">
+            @* <img class="large-logo" src="~/assets/media/image/logo.png" alt="..."> *@
+            <img style="display: block" src="~/assets/media/image/logo-sm.png" alt="...">
+            @* <img class="dark-logo" src="~/assets/media/image/logo-dark.png" alt="..."> *@
         </a>
     </div>
     <!-- end::header logo -->
@@ -171,7 +155,6 @@
 <!-- end::header -->
 <!-- begin::main content -->
 <main class="main-content">
-
     @RenderBody()
 
 </main>

@@ -1,0 +1,71 @@
+﻿@addTagHelper *, LazZiya.TagHelpers
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject Settings _settings 
+@using MonitoringNetCore.Common
+@model MonitoringNetCore.Common.PaginatedList<MonitoringNetCore.Domain.Entities.VideoProcessJob>
+@{
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    ViewBag.title = "پردازش ها";
+    ViewBag.menuNavigation = "پیشخوان";
+    ViewBag.menuItem = "پردازش ها";
+    ViewBag.activeNavigation = "navigationDashboard";
+    ViewBag.activeItem = "itemProcessLog";
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        لیست پردازش ها
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table" id="usersList">
+                    <thead>
+                    <tr>
+                        <th scope="col">ردیف</th>
+                        <th scope="col">ایدی ویدئو</th>
+                        <th scope="col">وضعیت</th>
+                        <th scope="col">زمان ایجاد</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @{
+                        int counter = ((Model.PageIndex == 0 ? 1 : Model.PageIndex) - 1) * 10 + 1;
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <th scope="row">@counter</th>
+                                @{
+                                    counter++;
+                                }
+                                <td>
+                                    <a asp-controller="Video" asp-action="Details" asp-route-id="@item.VideoId" class="btn btn-outline-primary">@item.VideoId</a>
+                                </td>
+                                <td>@item.Status</td>
+                                <td>@item.CreationDate</td>
+                                @* <td><a asp-action="Delete" class="btn btn-danger" asp-route-id="@item.Id">حذف</a></td> *@
+                            </tr>
+                        }
+
+                    }
+                    </tbody>
+                </table>
+                @{
+                    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+                    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+                }
+
+                <a asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                   class="btn btn-default btn-outline-primary @prevDisabled">
+                    قبل
+                </a>
+                <a asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                   class="btn btn-default btn-outline-primary @nextDisabled">
+                    بعد
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

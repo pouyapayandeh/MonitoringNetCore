@@ -1,23 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
-using System.Globalization;
-using Microsoft.Extensions.Configuration;
-using System.IO;
-using Monitoring.Site.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using MonitoringNetCore.Domain.Entities;
 
-namespace Monitoring.Presistence.Contexts
+namespace MonitoringNetCore.Persistence.Contexts
 {
     public class DataBaseContext:IdentityDbContext<IdentityUser>
     {
-        public DataBaseContext(DbContextOptions options) : base(options)
-        {
-            // Database
-
-        }
+        public DataBaseContext(DbContextOptions options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         { 
@@ -31,10 +21,10 @@ namespace Monitoring.Presistence.Contexts
             Console.WriteLine(Database.ProviderName);
             this.Database.Migrate();
         }
-
-        public DbSet<Monitoring.Site.Domain.Entities.VideoFile> VideoFile { get; set; }
-        
-        public DbSet<Monitoring.Site.Domain.Entities.Camera> Camera { get; set; }
-        public DbSet<Monitoring.Site.Domain.Entities.ProcessLog> ProcessLogs { get; set; }
+        public DbSet<Camera> Camera { get; set; } = null!;
+        public DbSet<VideoFile> VideoFile { get; set; } = null!;
+        public DbSet<ProcessLog> ProcessLogs { get; set; } = null!;
+        public DbSet<VideoProcessJob> VideoProcessJob { get; set; } = null!;
+        public DbSet<License> Licenses { get; set; } = null!;
     }
 }

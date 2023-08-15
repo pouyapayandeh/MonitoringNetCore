@@ -1,7 +1,11 @@
-@model Monitoring.Site.Domain.Entities.Camera
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MonitoringNetCore.Services
+@model MonitoringNetCore.Domain.Entities.Camera
+@inject CameraService _cameraService
+
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "جزییات";
     ViewBag.title = "دوربین ها";
     ViewBag.menuNavigation = "پیشخوان";
     ViewBag.menuItem = "دوربین ها";
@@ -10,38 +14,109 @@
     Layout = "~/Views/Shared/_MainLayout.cshtml";
 }
 
-<h1>Details</h1>
+<h4>@ViewData["Title"]</h4>
+@{
+        if(TempData["msg"] != null)
+        {
+
+                    <div class="alert alert-danger" role="alert">
+                        @TempData["msg"]
+                    </div>
+                    // We show the first error for that field
+        }
+}
+<div>
+    <hr/>
+    <div class="row">
+        <div class="col-sm-4">
+            <dl class="row">
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Name)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.InsertedAt)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.InsertedAt)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Type)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Type)
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Url)
+                </dt>
+                <dd class="col-sm-8">
+                    <span class="latin">
+                    @Html.DisplayFor(model => model.Url)
+                    </span>
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.StreamKey)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.StreamKey)
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.AutoSave)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.AutoSave)
+                </dd>
+            </dl>
+        </div>
+        <div class="col-sm-8">
+            <video id="video" width="320" height="240" style="border: 1px solid #000;" src0="@await _cameraService.GetLiveStreamForCamera(Model.Id)">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+</div>
 
 <div>
-    <h4>VideoFile</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.InsertedAt)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.InsertedAt)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Type)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Type)
-        </dd>
-    </dl>
+    <a asp-action="Edit" asp-route-id="@Model.Id">ویرایش</a> |
+    <a asp-action="Index">بازگشت به لیست</a>
 </div>
-<div>salam</div>
-<video width="320" height="240" controls>
-    <source type="video/mp4" src="@Html.DisplayFor(model => model.Url)">
-    Your browser does not support the video tag.
-</video>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+<script>
+const handel = (id) =>{
+			const video = document.getElementById(id);
+        
+        	// always prefer hls.js over native HLS.
+        	// this is because some Android versions support native HLS
+        	// but don't support fMP4s.
+        	if (Hls.isSupported()) {
+        		const hls = new Hls({
+        			maxLiveSyncPlaybackRate: 1.5,
+        		});
+        
+        		hls.on(Hls.Events.ERROR, (evt, data) => {
+        			if (data.fatal) {
+        				hls.destroy();
+        
+        				setTimeout(handel, 2000,id);
+        			}
+        		});
+        
+        		hls.loadSource(video.getAttribute("src0")+"/"+'index.m3u8');
+        		hls.attachMedia(video);
+        
+        		video.play();
+        
+        	} 
+	}
+const create = () => {
+	
+	handel("video");
+};
+
+window.addEventListener('DOMContentLoaded', create);
+
+</script>

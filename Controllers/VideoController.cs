@@ -12,9 +12,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Monitoring.Presistence.Contexts;
-using Monitoring.Site.Domain.Entities;
-using Monitoring.Site.Services;
+using MonitoringNetCore.Common;
+using MonitoringNetCore.Domain.Entities;
+using MonitoringNetCore.Persistence.Contexts;
+using MonitoringNetCore.Services;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace MonitoringNetCore.Controllers
@@ -29,25 +30,29 @@ namespace MonitoringNetCore.Controllers
     public class VideoController : Controller
     {
         private readonly DataBaseContext _context;
-        private readonly IHostingEnvironment hostingEnvironment;
+        private readonly IWebHostEnvironment hostingEnvironment;
         private readonly ILogger _logger;
-        private readonly AiProcessor _aiProcessor;
+        private readonly AiService _aiService;
+        private readonly VideoFileService _videoFileService;
         IAmazonS3 S3Client { get; set; }
         public VideoController(DataBaseContext context,
-            IHostingEnvironment environment,
+            IWebHostEnvironment environment,
             IAmazonS3 s3Client,
             ILogger<VideoController> logger,
-            AiProcessor aiProcessor)
+            AiService aiService,
+            VideoFileService videoVideoFileService
+            )
         {
             _context = context;
             hostingEnvironment = environment;
             this.S3Client = s3Client;
             _logger = logger;
-            _aiProcessor = aiProcessor;
+            _aiService = aiService;
+            _videoFileService = videoVideoFileService;
         }
 
         // GET: Video
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNumber,int? cameraId,string? userId,bool? isProcessed)
         {
             ViewBag.title = "ویدئوها";
             ViewBag.menuNavigation = "پیشخوان";
@@ -55,24 +60,29 @@ namespace MonitoringNetCore.Controllers
             ViewBag.activeNavigation = "navigationDashboard";
             ViewBag.activeItem = "itemVideos";
 
-            return View(await _context.VideoFile.ToListAsync());
+            var videos = _videoFileService.GetVideosQuery();
+            
+            ViewData["cameraId"] = cameraId;
+            ViewData["userId"] = userId;
+            ViewData["isProcessed"] = isProcessed;
+
+            
+            if (cameraId != null)
+                videos = videos.Where(file => file.CameraId == cameraId);
+            if (!String.IsNullOrEmpty(userId))
+                videos = videos.Where(file => file.UserId == userId);
+            
+            if (isProcessed != null)
+                videos = videos.Where(file => file.IsProcessed == isProcessed);
+            videos = videos.OrderByDescending(s => s.UploadDate);
+            return View(await PaginatedList<VideoFile>.CreateAsync(videos.AsNoTracking(), pageNumber ?? 1, 9));
         }
 
         // GET: Video/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            ViewBag.title = "حزئیات فیلم";
-            ViewBag.menuNavigation = "پیشخوان";
-            ViewBag.menuItem = "جزئیات فیلم";
-            ViewBag.activeNavigation = "navigationDashboard";
-
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var videoFile = await _context.VideoFile.Include(file => file.IdentityUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            
+            var videoFile = await _videoFileService.GetVideo(id);
             if (videoFile == null)
             {
                 return NotFound();
@@ -80,57 +90,24 @@ namespace MonitoringNetCore.Controllers
 
             return View(videoFile);
         }
-
-        // GET: Video/Create
-        public IActionResult Create()
+        public async Task<IActionResult> SideBySide(int? id)
         {
-            ViewBag.title = "ایجاد ویدئوی جدید";
-            ViewBag.menuNavigation = "پیشخوان";
-            ViewBag.menuItem = "ایجاد ویدئوی جدید";
-            ViewBag.activeNavigation = "navigationDashboard";
-
-            return View();
-        }
-
-        // POST: Video/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Path,UploadDate")] VideoFile videoFile)
-        {
-            ViewBag.title = "ایجاد ویدئوی جدید";
-            ViewBag.menuNavigation = "پیشخوان";
-            ViewBag.menuItem = "ایجاد ویدئوی جدید";
-            ViewBag.activeNavigation = "navigationDashboard";
-
-            if (ModelState.IsValid)
+            
+            var videoFile = await _videoFileService.GetVideo(id);
+            if (videoFile == null)
             {
-                videoFile.UploadDate = DateTime.SpecifyKind(videoFile.UploadDate, DateTimeKind.Utc);
-                _context.Add(videoFile);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
+
             return View(videoFile);
         }
+        
+        
         public IActionResult Upload()
         {
-            ViewBag.title = "بارگذاری ویدئوی جدید";
-            ViewBag.menuNavigation = "پیشخوان";
-            ViewBag.menuItem = "بارگذاری ویدئوی جدید";
-            ViewBag.activeNavigation = "navigationDashboard";
-
             return View();
         }
-        private async Task<(int exitCode, string? error)> GenerateThumbnail(string videoPath,string thumbnailPath)
-        {
-            string args = String.Format("-y -i \"{0}\" -vf \"thumbnail\" -frames:v 1 \"{1}\"",videoPath, thumbnailPath);
-            var proc = Process.Start("ffmpeg",args);
-            ArgumentNullException.ThrowIfNull(proc);
-            // string errorOutput = proc.StandardError.ReadToEnd();
-            await proc.WaitForExitAsync();
-            return (proc.ExitCode, "");
-        }
+
         // POST: Video/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -141,10 +118,6 @@ namespace MonitoringNetCore.Controllers
         public async Task<IActionResult> Upload(UploadedVideo videoFile)
         {
 
-            ViewBag.title = "بارگذاری ویدئوی جدید";
-            ViewBag.menuNavigation = "پیشخوان";
-            ViewBag.menuItem = "بارگذاری ویدئوی جدید";
-            ViewBag.activeNavigation = "navigationDashboard";
             _logger.LogInformation("Uploading File");
             if (videoFile.FormFile != null)
             {
@@ -152,57 +125,8 @@ namespace MonitoringNetCore.Controllers
                 var uploads = Path.Combine(hostingEnvironment.WebRootPath, "uploads");
                 var filePath = Path.Combine("/tmp",uniqueFileName);
                 videoFile.FormFile.CopyTo(new FileStream(filePath, FileMode.Create));
-                
-                
-                using (var newMemoryStream = videoFile.FormFile.OpenReadStream())
-                {
-                    
-
-                    
-                    var uploadRequest = new TransferUtilityUploadRequest
-                    {
-                        InputStream = newMemoryStream,
-                        Key =  videoFile.FormFile .FileName,
-                        BucketName = "uploads",
-                        CannedACL = S3CannedACL.PublicRead,
-                        
-                    };
-
-                    var fileTransferUtility = new TransferUtility(S3Client);
-                    await fileTransferUtility.UploadAsync(uploadRequest);
-                }
-
-                string thumbPath = Path.Combine("/tmp", uniqueFileName + ".png");
-                await GenerateThumbnail(filePath, thumbPath);
-                
-                
-                using (FileStream fs = System.IO.File.OpenRead(thumbPath))
-                {
-
-                    var uploadRequest = new TransferUtilityUploadRequest
-                    {
-                        InputStream = fs,
-                        Key =  videoFile.FormFile.FileName+".png",
-                        BucketName = "thumbnails",
-                        CannedACL = S3CannedACL.PublicRead,
-                        
-                    };
-
-                    var fileTransferUtility = new TransferUtility(S3Client);
-                    await fileTransferUtility.UploadAsync(uploadRequest);
-                } 
-                
-                
                 IdentityUser user = _context.Users.Where(user => user.Email == User.Identity.Name).ToList().First();
-                var video = new VideoFile
-                {
-                    UploadDate = DateTime.UtcNow,
-                    UserId = user.Id, 
-                    Path = Path.Combine("uploads",uniqueFileName),
-                    ThumbnailPath =  Path.Combine("thumbnails", uniqueFileName + ".png")
-                };
-                _context.Add(video);
-                await _context.SaveChangesAsync();
+                await _videoFileService.AddVideo(filePath, user.Id);
                 return RedirectToAction(nameof(Index));
                 //to do : Save uniqueFileName  to your db table   
             }
@@ -303,8 +227,15 @@ namespace MonitoringNetCore.Controllers
         public async Task<IActionResult> BeginProcess(int id)
         {
             var videoFile = await _context.VideoFile.FindAsync(id);
-            Task.Run(async () => await  _aiProcessor.ProcessWithVideoOutput(videoFile));
-            return RedirectToAction(nameof(Index));
+            var job = new VideoProcessJob()
+            {
+                Status = JobStatus.Waiting,
+                VideoId = videoFile.Id,
+            };
+            var process = _context.Add(job);
+            await _context.SaveChangesAsync();
+            TempData["msg"] = "در صف پردازش قرار گرفت";
+            return RedirectToAction(nameof(Details),new {id = id});
         }
         
         private bool VideoFileExists(int id)

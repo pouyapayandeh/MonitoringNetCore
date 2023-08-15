@@ -1,0 +1,59 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MonitoringNetCore.Domain.Entities
+@model MonitoringNetCore.Controllers.CameraList
+
+@{
+    ViewData["Title"] = "انتخاب دوربین ها";
+    ViewBag.title = "دوربین ها";
+    ViewBag.menuNavigation = "پیشخوان";
+    ViewBag.menuItem = "دوربین ها";
+    ViewBag.activeNavigation = "navigationDashboard";
+    ViewBag.activeItem = "itemCameras";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<h4>@ViewData["Title"]</h4>
+<hr />
+@*     @{ *@
+@*         if(ViewBag.errors != null) *@
+@*         { *@
+@*             foreach(var error in ViewBag.errors) *@
+@*             { *@
+@*                 //If there are any errors for a field... *@
+@*                 if(@error.errors.Count > 0) *@
+@*                 { *@
+@*                     <div class="alert alert-danger" role="alert"> *@
+@*                         @error.errors[0].ErrorMessage *@
+@*                     </div> *@
+@*                     // We show the first error for that field *@
+@*                 } *@
+@*             } *@
+@*         } *@
+@* *@
+@*     } *@
+@* <p>@Html.ValidationSummary(false)</p> *@
+<div class="row">
+    <div class="col-md-8">
+        <div class="row">
+        <div class="col-md-8">
+            <form asp-action="Tile">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+               <div class="col-sm-4">                            
+                        @Html.ListBoxFor(model=> model.CameraIds,Model.Cameras, new {@class="form-control",id="Cameras", multiple="multiple" })
+                </div>
+                    
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="نمایش" class="btn btn-primary"/>
+                </div>
+            </form>
+        </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">بازگشت</a>
+</div>
+

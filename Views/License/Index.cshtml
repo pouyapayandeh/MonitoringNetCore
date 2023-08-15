@@ -1,0 +1,29 @@
+﻿@addTagHelper *, LazZiya.TagHelpers
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model MonitoringNetCore.Controllers.NewLicense
+@{
+    Layout = "/Views/Shared/_LayoutNoSidebar.cshtml";
+}
+
+
+<div class="text-center">
+    @* <h1>@ViewData["Title"]</h1> *@
+    <div>
+        <img class="small-logo" src="~/assets/media/image/logo-sm.png" alt="...">
+    </div>
+    <h3>لایسنس</h3>
+    <div>@Model.License</div>
+    <h3>وضعیت</h3>
+    @{
+        var status = (bool)!Model.Status ? "غیر‌فعال" : "فعال";
+    }
+    <div>
+
+        @status
+    </div>
+    
+    <div>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-default btn-outline-primary">بازگشت</a>
+    </div>
+</div>
+

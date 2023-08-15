@@ -1,15 +1,14 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Microsoft.AspNetCore.Mvc;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace MonitoringNetCore.Controllers;
 
 public class PanelController : Controller
 {
     IAmazonS3 S3Client { get; set; }
-    private readonly IHostingEnvironment hostingEnvironment;
-    public PanelController(IHostingEnvironment environment,IAmazonS3 s3Client)
+    private readonly IWebHostEnvironment hostingEnvironment;
+    public PanelController(IWebHostEnvironment environment,IAmazonS3 s3Client)
     {
         hostingEnvironment = environment;
         this.S3Client = s3Client;

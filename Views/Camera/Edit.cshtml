@@ -1,7 +1,9 @@
-@model Monitoring.Site.Domain.Entities.Camera
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MonitoringNetCore.Domain.Entities
+@model MonitoringNetCore.Domain.Entities.Camera
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "ویرایش";
     ViewBag.title = "دوربین ها";
     ViewBag.menuNavigation = "پیشخوان";
     ViewBag.menuItem = "دوربین ها";
@@ -9,10 +11,7 @@
     ViewBag.activeItem = "itemCameras";
     Layout = "~/Views/Shared/_MainLayout.cshtml";;
 }
-
-<h1>Edit</h1>
-
-<h4>VideoFile</h4>
+<h4>@ViewData["Title"]</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -20,23 +19,44 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                @*<label asp-for="Path" class="control-label"></label>
-                <input asp-for="Path" class="form-control" />
-                <span asp-validation-for="Path" class="text-danger"></span>*@
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <label asp-for="Type" class="control-label"></label>
+                <select asp-for="Type" asp-items="Html.GetEnumSelectList<CameraType>()">
+                    <option selected="selected" value="">انتخاب کنید</option>
+                </select>
+                <span asp-validation-for="Type" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="InsertedAt" class="control-label"></label>
-                <input asp-for="InsertedAt" class="form-control" />
-                <span asp-validation-for="InsertedAt" class="text-danger"></span>
+                <label asp-for="Url" class="control-label"></label>
+                <input asp-for="Url" class="form-control latin"/>
+                <span asp-validation-for="Url" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <label asp-for="AutoSave" class="control-label"></label>
+                <input asp-for="AutoSave" />
+                <span asp-validation-for="AutoSave" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <label asp-for="Enable" class="control-label"></label>
+                <input asp-for="Enable" />
+                <span asp-validation-for="Enable" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <input type="submit" value="ذخیره" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">بازگشت به لیست</a>
 </div>
 

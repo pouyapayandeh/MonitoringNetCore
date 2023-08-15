@@ -1,6 +1,11 @@
-﻿@model MonitoringNetCore.Controllers.UploadedVideo
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model MonitoringNetCore.Controllers.UploadedVideo
 
 @{
+    ViewBag.title = "بارگذاری ویدئوی جدید";
+    ViewBag.menuNavigation = "پیشخوان";
+    ViewBag.menuItem = "بارگذاری ویدئوی جدید";
+    ViewBag.activeNavigation = "navigationDashboard";
     Layout = "~/Views/Shared/_MainLayout.cshtml";
 }
 

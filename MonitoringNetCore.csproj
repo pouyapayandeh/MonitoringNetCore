@@ -26,9 +26,12 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
+    <PackageReference Include="Standard.Licensing" Version="1.1.5" />
+    <PackageReference Include="YamlDotNet" Version="13.1.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="mediamtx" />
     <Folder Include="Migrations" />
     <Folder Include="wwwroot\uploads" />
   </ItemGroup>
@@ -43,9 +46,9 @@
 		<Content Update="bundleconfig.json.bak">
 		  <CopyToPublishDirectory>Never</CopyToPublishDirectory>
 		</Content>
+		<None Remove="publicKey" />
+		<EmbeddedResource Include="publicKey" />
 	</ItemGroup>
-	<ItemGroup>
-	  <_ContentIncludedByDefault Remove="Views\Log\Index.cshtml" />
-	</ItemGroup>
+
 
 </Project>

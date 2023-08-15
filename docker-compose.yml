@@ -8,19 +8,19 @@ services:
     ports:
       - "7009:7009"
       - "5273:5273"
+      - "8888:8888"
     depends_on:
       - minio
       - postgres
       - video_processor
     environment:
-      DATABASE_HOST: "postgres"
-      DATABASE_USER: "user"
-      DATABASE_PASSWORD: "password"
-      DATABASE_NAME: "monitoring"
-      AWS_ENDPOINT: "http://minio:9000"
-      AWS_ACCESS_KEY_ID: minioaccesskey
-      AWS_SECRET_ACCESS_KEY_ID: miniosecretkey
-      VIDEO_PROCESSOR_SERVICE_URL: "http://video_processor:8000"
+      ConnectionStrings__PostgresConnection: "Server=postgres;Database=monitoring;User Id=user;Password=password"
+      MediaMTX__Path: "/mediamtx/"
+      MediaMTX__Host: "monitoringnetcore"
+      AWS__Endpoint: "http://minio:9000"
+      AWS__AccessKeyId: minioaccesskey
+      AWS__SecretAccessKey: miniosecretkey
+      VideoProcessor__URL: "http://video_processor:8000"
       ASPNETCORE_URLS: "http://*:5273"
 
   postgres:
@@ -36,7 +36,7 @@ services:
 
   minio:
     image: minio/minio
-    command: server /data
+    command: server /data --console-address ":9001"
     volumes:
       - minio_data:/data
     environment:
@@ -62,6 +62,8 @@ services:
       exit 0;
       "
 
+      
+      
   video_processor:
     build:
       context: ./video_processor  # path to your Python Dockerfile

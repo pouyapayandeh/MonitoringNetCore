@@ -1,0 +1,114 @@
+﻿
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MonitoringNetCore.Common
+@inject Settings _settings 
+@model MonitoringNetCore.Domain.Entities.VideoFile
+
+@{
+    ViewBag.title = "حزئیات فیلم";
+    ViewBag.menuNavigation = "پیشخوان";
+    ViewBag.menuItem = "جزئیات فیلم";
+    ViewBag.activeNavigation = "navigationDashboard";
+    
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<h4>@ViewData["Title"]</h4>
+
+<div>
+    <hr/>
+    <div class="row">
+      <div class="col-sm-6">
+        <video id="video" controls style="border: 1px solid #000;overflow: hidden;
+            min-width: 100%;min-height: 100%;width: 300px;height: auto;object-fit: fill;"
+        >
+          <source  type="video/mp4" s  src="@_settings.AWS.PublicEndpoint@Model.Path"> 
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      <div class="col-sm-6">
+        <video id="video_proccess"  style="border: 1px solid #000;overflow: hidden;
+            min-width: 100%;min-height: 100%;width: 300px;height: auto;object-fit: fill;"
+        >
+          <source  type="video/mp4" s  src="@_settings.AWS.PublicEndpoint@Model.ProcessedVideo.Path"> 
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+    <input type="range" value="0" id="scrub" dir="ltr" hidden/>
+</div>
+
+<div>
+    <a asp-action="Index">بازگشت به لیست</a>
+</div>
+<script src="~/vendors/popcorn.js"></script>
+<script>
+
+var videos = {
+    a: Popcorn("#video"),
+    b: Popcorn("#video_proccess"),
+  },
+  scrub = $("#scrub"),
+  loadCount = 0,
+  events = "play pause timeupdate seeking".split(/\s+/g);
+
+// iterate both media sources
+Popcorn.forEach(videos, function(media, type) {
+
+  // when each is ready... 
+  media.on("canplayall", function() {
+
+    // trigger a custom "sync" event
+    this.emit("sync");
+
+    // set the max value of the "scrubber"
+    scrub.attr("max", this.duration());
+
+    // Listen for the custom sync event...    
+  }).on("sync", function() {
+
+    // Once both items are loaded, sync events
+    if (++loadCount == 2) {
+
+      // Iterate all events and trigger them on the video B
+      // whenever they occur on the video A
+      events.forEach(function(event) {
+
+        videos.a.on(event, function() {
+
+          // Avoid overkill events, trigger timeupdate manually
+          if (event === "timeupdate") {
+
+            if (!this.media.paused) {
+              return;
+            }
+            videos.b.emit("timeupdate");
+
+            // update scrubber
+            scrub.val(this.currentTime());
+
+            return;
+          }
+
+          if (event === "seeking") {
+            videos.b.currentTime(this.currentTime());
+          }
+
+          if (event === "play" || event === "pause") {
+            videos.b[event]();
+          }
+        });
+      });
+    }
+  });
+});
+
+scrub.bind("change", function() {
+  var val = this.value;
+  videos.a.currentTime(val);
+  videos.b.currentTime(val);
+});
+
+// With requestAnimationFrame, we can ensure that as 
+// freque
+</script>

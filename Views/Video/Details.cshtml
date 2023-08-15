@@ -1,33 +1,78 @@
-﻿@model Monitoring.Site.Domain.Entities.VideoFile
+﻿
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MonitoringNetCore.Common
+@inject Settings _settings 
+@model MonitoringNetCore.Domain.Entities.VideoFile
 
 @{
+    ViewBag.title = "حزئیات فیلم";
+    ViewBag.menuNavigation = "پیشخوان";
+    ViewBag.menuItem = "جزئیات فیلم";
+    ViewBag.activeNavigation = "navigationDashboard";
+    
     Layout = "~/Views/Shared/_MainLayout.cshtml";
 }
 
-<div class="row row-cols-1 row-cols-md-6 g-4">
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>شناسه</th>
-                            <th>تاریخ</th>
-                            <th>مسیر</th>
-                            <th>کاربر</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>@Model.Id</td>
-                            <td>@Model.UploadDate</td>
-                            <td>@Model.Path</td>
-                            <td>@Model.IdentityUser.Email</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <a asp-aciton="Index" href="/Video" class="btn btn-outline-primary">بازگشت به لیست</a>
-            </div>
+<h4>@ViewData["Title"]</h4>
+
+<div>
+    <hr/>
+    <div class="row">
+        <div class="col-sm-4">
+            <dl class="row">
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Path)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Path)
+                </dd>
+                
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.IsProcessed)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.IsProcessed)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.UploadDate)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.UploadDate)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.IdentityUser)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.IdentityUser.Email)
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Camera)
+                </dt>
+                <dd class="col-sm-8">
+                    <span class="latin">
+                        @Html.DisplayFor(model => model.Camera.Name)
+                    </span>
+                </dd>
+                @{
+                    var sideBySideDisabled = Model.ProcessedVideo == null ? ".d-none" : "";
+                }
+                <a asp-action="SideBySide" asp-route-id="@Model.Id" class="btn btn-outline-primary @sideBySideDisabled">نمایش کنار هم</a>
+
+
+            </dl>
+        </div>
+        <div class="col-sm-8">
+            <video id="video" controls style="border: 1px solid #000;overflow: hidden;
+            min-width: 100%;min-height: 100%;width: 300px;height: auto;object-fit: fill;"
+                 >
+                <source  type="video/mp4" s  src="@_settings.AWS.PublicEndpoint@Model.Path"> 
+                Your browser does not support the video tag.
+            </video>
         </div>
     </div>
+</div>
+
+<div>
+    <a asp-action="Index">بازگشت به لیست</a>
 </div>

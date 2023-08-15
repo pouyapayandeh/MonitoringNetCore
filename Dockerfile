@@ -20,6 +20,9 @@ FROM base AS final
 EXPOSE 7009
 EXPOSE 5273
 WORKDIR /app
-RUN apt-get update && apt-get install ffmpeg -y
+RUN apt-get update && apt-get install ffmpeg htop -y
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "MonitoringNetCore.dll"]
+COPY ./mediamtx /mediamtx
+COPY ./entrypoint.sh ./entrypoint.sh
+EXPOSE 5273
+ENTRYPOINT ["./entrypoint.sh"]

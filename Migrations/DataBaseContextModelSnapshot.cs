@@ -3,7 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Monitoring.Presistence.Contexts;
+using MonitoringNetCore.Persistence.Contexts;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -222,7 +222,7 @@ namespace MonitoringNetCore.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Monitoring.Site.Domain.Entities.Camera", b =>
+            modelBuilder.Entity("MonitoringNetCore.Domain.Entities.Camera", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -230,15 +230,28 @@ namespace MonitoringNetCore.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("AutoSave")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("Enable")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime>("InsertedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRealtimeProcess")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
+                    b.Property<string>("StreamKey")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("varchar(24)");
 
                     b.Property<string>("Url")
                         .IsRequired()
@@ -249,7 +262,24 @@ namespace MonitoringNetCore.Migrations
                     b.ToTable("Camera");
                 });
 
-            modelBuilder.Entity("Monitoring.Site.Domain.Entities.ProcessLog", b =>
+            modelBuilder.Entity("MonitoringNetCore.Domain.Entities.License", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Licenses");
+                });
+
+            modelBuilder.Entity("MonitoringNetCore.Domain.Entities.ProcessLog", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -283,13 +313,22 @@ namespace MonitoringNetCore.Migrations
                     b.ToTable("ProcessLogs");
                 });
 
-            modelBuilder.Entity("Monitoring.Site.Domain.Entities.VideoFile", b =>
+            modelBuilder.Entity("MonitoringNetCore.Domain.Entities.VideoFile", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CameraId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsProcessed")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("OriginalVideoId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Path")
                         .IsRequired()
@@ -303,15 +342,45 @@ namespace MonitoringNetCore.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CameraId");
+
+                    b.HasIndex("OriginalVideoId")
+                        .IsUnique();
+
                     b.HasIndex("UserId");
 
                     b.ToTable("VideoFile");
+                });
+
+            modelBuilder.Entity("MonitoringNetCore.Domain.Entities.VideoProcessJob", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("varchar(24)");
+
+                    b.Property<int>("VideoId")
+                        .HasMaxLength(128)
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VideoId");
+
+                    b.ToTable("VideoProcessJob");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -365,9 +434,9 @@ namespace MonitoringNetCore.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Monitoring.Site.Domain.Entities.ProcessLog", b =>
+            modelBuilder.Entity("MonitoringNetCore.Domain.Entities.ProcessLog", b =>
                 {
-                    b.HasOne("Monitoring.Site.Domain.Entities.VideoFile", "VideoFile")
+                    b.HasOne("MonitoringNetCore.Domain.Entities.VideoFile", "VideoFile")
                         .WithMany()
                         .HasForeignKey("VideoId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -376,15 +445,42 @@ namespace MonitoringNetCore.Migrations
                     b.Navigation("VideoFile");
                 });
 
-            modelBuilder.Entity("Monitoring.Site.Domain.Entities.VideoFile", b =>
+            modelBuilder.Entity("MonitoringNetCore.Domain.Entities.VideoFile", b =>
                 {
+                    b.HasOne("MonitoringNetCore.Domain.Entities.Camera", "Camera")
+                        .WithMany()
+                        .HasForeignKey("CameraId");
+
+                    b.HasOne("MonitoringNetCore.Domain.Entities.VideoFile", "OriginalVideo")
+                        .WithOne("ProcessedVideo")
+                        .HasForeignKey("MonitoringNetCore.Domain.Entities.VideoFile", "OriginalVideoId");
+
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Camera");
+
+                    b.Navigation("IdentityUser");
+
+                    b.Navigation("OriginalVideo");
+                });
+
+            modelBuilder.Entity("MonitoringNetCore.Domain.Entities.VideoProcessJob", b =>
+                {
+                    b.HasOne("MonitoringNetCore.Domain.Entities.VideoFile", "VideoFile")
+                        .WithMany()
+                        .HasForeignKey("VideoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("IdentityUser");
+                    b.Navigation("VideoFile");
+                });
+
+            modelBuilder.Entity("MonitoringNetCore.Domain.Entities.VideoFile", b =>
+                {
+                    b.Navigation("ProcessedVideo")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

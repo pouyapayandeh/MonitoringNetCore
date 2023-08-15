@@ -1,4 +1,5 @@
-@model IEnumerable<Monitoring.Site.Domain.Entities.Camera>
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model IEnumerable<MonitoringNetCore.Domain.Entities.Camera>
 
 @{
     ViewBag.title = "دوربین ها";
@@ -11,7 +12,7 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between">
         لیست دوربین ها
-         <a asp-action="Create">اضافه کردن</a>
+        <a asp-action="Create">اضافه کردن</a>
     </div>
     <div class="card">
         <div class="card-body">
@@ -19,9 +20,10 @@
                 <table class="table" id="usersList">
                     <thead>
                     <tr>
-                        <th scope="col">ردیف</th>
-                        <th scope="col">نام کتاب</th>
-                        <th scope="col">شناسه کتاب</th>
+                        <th scope="col">@Html.DisplayNameFor(model => model.Name)</th>
+                        <th scope="col">@Html.DisplayNameFor(model => model.Type)</th>
+                        <th scope="col">@Html.DisplayNameFor(model => model.Url)</th>
+                        <th scope="col">@Html.DisplayNameFor(model => model.Enable)</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -32,33 +34,35 @@
                                 @Html.DisplayFor(modelItem => item.Name)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.InsertedAt)
+                                @Html.DisplayFor(modelItem => item.Type)
+                            </td>
+                            <td class="latin">
+                                @Html.DisplayFor(modelItem => item.Url)
                             </td>
                             <td>
-                                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                @{
+                                    var status = (bool)!item.Enable ? "غیر‌فعال" : "فعال";
+                                }
+                                @status
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.Id">ویرایش</a> |
+                                <a asp-action="Details" asp-route-id="@item.Id">جزییات</a> |
+                                @* <a asp-action="Delete" asp-route-id="@item.Id">حذف</a> *@
+                                <a asp-action="StartSideBySide" asp-route-id="@item.Id">پردازش</a>
+                                <a asp-controller="Video" asp-action="Index"
+                                   asp-route-cameraId="@item.Id"
+                                   class="btn btn-default btn-outline-primary ">
+                                    ویدئو ها
+                                </a>
                             </td>
                         </tr>
                     }
                     </tbody>
                 </table>
-                @* total-records="@Model.Data.Rows" *@
-                @*         page-no="@pageNumber == 0 ? 1 : pageNumber" *@
-                @*         page-size="@pageSize == 0 ? 10 : pageSize" *@
-                <paging
-                    show-prev-next="true"
-                    show-total-pages="false"
-                    show-total-records="false"
-                    show-page-size-nav="true"
-                    show-first-numbered-page="true"
-                    show-last-numbered-page="true"
-                    query-string-key-page-no="PageNumber"
-                    query-string-key-page-size="PageSize"
-                    query-string-value="@@(Request.QueryString.Value)"
-                    gap-size="2">
-                </paging>
+
             </div>
         </div>
     </div>
 </div>
+<a asp-action="CreateTile" class="btn btn-outline-primary">مشاهده</a> 

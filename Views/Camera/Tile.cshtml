@@ -1,0 +1,108 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using MonitoringNetCore.Domain.Entities
+@using MonitoringNetCore.Services
+@using NuGet.Protocol
+@model MonitoringNetCore.Controllers.CameraList
+@inject CameraService _cameraService
+
+@{
+    ViewData["Title"] = "افزودن دوربین جدید";
+    ViewBag.title = "دوربین ها";
+    ViewBag.menuNavigation = "پیشخوان";
+    ViewBag.menuItem = "دوربین ها";
+    ViewBag.activeNavigation = "navigationDashboard";
+    ViewBag.activeItem = "itemCameras";
+    Layout = "~/Views/Shared/_LayoutNoSidebar.cshtml";
+}
+
+<h4>@ViewData["Title"]</h4>
+<hr />
+@*     @{ *@
+@*         if(ViewBag.errors != null) *@
+@*         { *@
+@*             foreach(var error in ViewBag.errors) *@
+@*             { *@
+@*                 //If there are any errors for a field... *@
+@*                 if(@error.errors.Count > 0) *@
+@*                 { *@
+@*                     <div class="alert alert-danger" role="alert"> *@
+@*                         @error.errors[0].ErrorMessage *@
+@*                     </div> *@
+@*                     // We show the first error for that field *@
+@*                 } *@
+@*             } *@
+@*         } *@
+@* *@
+@*     } *@
+@* <p>@Html.ValidationSummary(false)</p> *@
+@{
+    var w = (100.0 / (Model.CameraIds.Length / 2.0)) - 1;
+	if (Model.CameraIds.Length == 2)
+		w = 49.0;
+}
+<style>
+    .tile {
+      display: grid;
+      grid-gap: 15px; 
+      overflow: hidden;
+    /*   grid-template-columns: repeat(auto-fill, 200px); */
+      grid-template-columns: repeat(auto-fit, @w%);
+    /*   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr) 150px); */
+      grid-auto-flow: dense;
+    }
+
+
+</style>
+<div class="tile">
+@foreach (var cameraId in Model.CameraIds)
+{
+    <div >
+        <video id="video@(cameraId)"   style="border: 1px solid #000;width: 100%" src0="@await _cameraService.GetLiveStreamForCamera(cameraId)">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+}
+</div>
+<div>
+    <a asp-action="Index">بازگشت</a>
+</div>
+
+<script type="text/javascript">
+const handel = (id) =>{
+			const video = document.getElementById(id);
+        
+        	// always prefer hls.js over native HLS.
+        	// this is because some Android versions support native HLS
+        	// but don't support fMP4s.
+        	if (Hls.isSupported()) {
+        		const hls = new Hls({
+        			maxLiveSyncPlaybackRate: 1.5,
+        		});
+        
+        		hls.on(Hls.Events.ERROR, (evt, data) => {
+        			if (data.fatal) {
+        				hls.destroy();
+        
+        				setTimeout(handel, 2000,id);
+        			}
+        		});
+        
+        		hls.loadSource(video.getAttribute("src0")+"/"+'index.m3u8');
+        		hls.attachMedia(video);
+        
+        		video.play();
+        
+        	} 
+	}
+const create = () => {
+	var cameraList = @Html.Raw(Json.Serialize(Model.CameraIds)); 
+	console.log(cameraList);
+	for (const cameraListKey of cameraList) {
+		console.log("video"+cameraListKey);
+	  	handel("video"+cameraListKey);
+	}
+};
+
+window.addEventListener('DOMContentLoaded', create);
+
+</script>
